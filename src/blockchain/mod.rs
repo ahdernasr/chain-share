@@ -1,5 +1,5 @@
 /*
-Todo: 
+Todo:
 1. Implement time stamping
 */
 
@@ -13,7 +13,7 @@ pub struct BlockChain {
 
 // Block structure, defines all the properties of a block in this this blockchain
 #[derive(Debug)]
-pub struct Block { 
+pub struct Block {
     pub id: u64,
     pub nonce: u64,
     pub file_name: String,
@@ -39,9 +39,7 @@ impl BlockChain {
         blocks.push(genesis_block);
 
         // BlockChain object with pre-set genesis is constructed
-        return BlockChain {
-            blocks: blocks,
-        }
+        return BlockChain { blocks: blocks };
     }
 
     pub fn add_block(&mut self, block: Block) {
@@ -59,8 +57,10 @@ impl BlockChain {
                 }
             }
         }
-    } 
+    }
 
+    //Todo: Could this be implemented in the Block instead?
+    //Checking if block is valid for the 'add_block' function based on 3 criterion
     fn block_is_valid(&self, block: &Block, last_block: &Block) -> bool {
         if (block.previous_hash != last_block.current_hash) {
             println!("Invalid previous hash: ID{}", block.id);
@@ -75,9 +75,66 @@ impl BlockChain {
             true
         }
     }
+
+    pub fn chain_is_valid(&self, chain: &Vec<Block>) -> bool {
+        match chain.len() {
+            0 => {
+                println!("The chain is empty");
+                false
+            }
+            1 => {
+                println!("The chain only contains the genesis block");
+                false
+            }
+            _ => {
+                for i in 1..chain.len() {
+                    let previous = chain.get(i - 1).unwrap();
+                    let current = chain.get(i).unwrap();
+                    if !self.block_is_valid(current, previous) {
+                        return false
+                    }
+                }
+                println!("The chain is valid");
+                true
+            }
+        }
+    }
+
+    /* 
+    //Implementation needs to be readjusted for multi-node chain selection
+    fn chain_selector(&self, local: Vec<Block>, remote: Vec<Block>) -> Option<Vec<Block>> {
+        let local_is_valid: bool = self.chain_is_valid(&local);
+        let remote_is_valid: bool = self.chain_is_valid(&remote);
+
+        match (local_is_valid, remote_is_valid) {
+            (true, true) => {
+                if local.len() >= remote.len() {
+                    println!("The local copy is valid");
+                    Some(local)
+                } else {
+                    println!("The remote copy is valid");
+                    Some(remote)
+                }
+            },
+            (true, false) => {
+                println!("The local copy is valid. Keeping local copy.");
+                Some(local)
+            },
+            (false, true) => {
+                println!("The remote copy is valid, returning remote copy");
+                Some(remote)
+            },
+            (false, false) => {
+                println!("Both chains are invalid");
+                None
+            }
+
+        }
+    }
+    */
 }
 
-use md4::{Md4, Digest};
+use md4::{Digest, Md4};
 
 impl Block {
     pub fn new(id: u64, file_name: String, file_data: String, previous_hash: String) -> Block {
@@ -90,7 +147,7 @@ impl Block {
             file_data,
             previous_hash,
             current_hash: hash,
-        }
+        };
     }
 
     pub fn mine(id: u64, previous_hash: &str, file_data: &str) -> (u64, String) {
@@ -104,7 +161,7 @@ impl Block {
             let hash = hex::encode(result);
             if hash.starts_with("000") {
                 println!("Mined! Nonce: {}, hash {}", nonce, hash);
-                return (nonce, hash)
+                return (nonce, hash);
             }
             nonce += 1;
         }

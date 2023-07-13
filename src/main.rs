@@ -6,4 +6,5 @@ fn main() {
     println!("{:?}", mined_block);
     BC.add_block(mined_block);
     println!("{:?}", BC);
+    BC.chain_is_valid(&BC.blocks);
 }
