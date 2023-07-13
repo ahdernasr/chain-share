@@ -1,6 +1,7 @@
 /*
 Todo:
 1. Implement time stamping
+2. Data races (nodes mined at the same time)
 */
 
 #![allow(dead_code)]
