@@ -43,6 +43,38 @@ impl BlockChain {
             blocks: blocks,
         }
     }
+
+    pub fn add_block(&mut self, block: Block) {
+        match self.blocks.last() {
+            None => {
+                println!("Blockchain Error: Could not add block.")
+            }
+
+            Some(last_block) => {
+                if self.block_is_valid(&block, last_block) {
+                    self.blocks.push(block);
+                    println!("Block added to blockchain!")
+                } else {
+                    println!("Block is not valid, could not add to block")
+                }
+            }
+        }
+    } 
+
+    fn block_is_valid(&self, block: &Block, last_block: &Block) -> bool {
+        if (block.previous_hash != last_block.current_hash) {
+            println!("Invalid previous hash: ID{}", block.id);
+            false
+        } else if !block.current_hash.starts_with("000") {
+            println!("Invalid hash: ID{}", block.id);
+            false
+        } else if block.id != last_block.id + 1 {
+            println!("Invalid ID, ID must be one more than last block's ID");
+            false
+        } else {
+            true
+        }
+    }
 }
 
 use md4::{Md4, Digest};

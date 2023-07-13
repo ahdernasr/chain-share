@@ -1,8 +1,9 @@
 mod blockchain;
 
 fn main() {
-    let blockchain: blockchain::BlockChain = blockchain::BlockChain::new();
-    println!("{:?}", blockchain);
-    let mined_block: blockchain::Block = blockchain::Block::new(2, "test file".to_string(), "none".to_string(),blockchain.blocks[0].current_hash.to_owned());
+    let mut BC: blockchain::BlockChain = blockchain::BlockChain::new();
+    let mined_block: blockchain::Block = blockchain::Block::new(2, "test file".to_string(), "none".to_string(),BC.blocks[0].current_hash.to_owned());
     println!("{:?}", mined_block);
+    BC.add_block(mined_block);
+    println!("{:?}", BC);
 }
