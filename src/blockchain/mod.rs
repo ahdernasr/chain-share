@@ -63,7 +63,7 @@ impl BlockChain {
     //Todo: Could this be implemented in the Block instead?
     //Checking if block is valid for the 'add_block' function based on 3 criterion
     fn block_is_valid(&self, block: &Block, last_block: &Block) -> bool {
-        if (block.previous_hash != last_block.current_hash) {
+        if block.previous_hash != last_block.current_hash {
             println!("Invalid previous hash: ID{}", block.id);
             false
         } else if !block.current_hash.starts_with("000") {
