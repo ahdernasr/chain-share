@@ -34,7 +34,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     print!("{}", clear::All);
     stdout().flush().unwrap();
 
-    let (_libp2p_result, _cli_result) = futures::join!(p2p_task(), cli_task());
+    let (_p2p_result, _cli_result) = futures::join!(p2p_task(), cli_task());
 
     Ok(())
 }
