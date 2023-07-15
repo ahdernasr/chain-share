@@ -10,6 +10,11 @@ md4 = "0.10.2"
 hex = "0.4.3"
 clap = { version = "4.3.11", features = ["derive"] }
 log = "0.4.14"
-env_logger = "0.9.0"
+env_logger = "0.10.0"
 termion = "2.0.1"
-
+async-std = { version = "1.12", features = ["attributes"] }
+async-trait = "0.1"
+futures = "0.3.28"
+libp2p = { version="0.52.1", features = ["async-std", "gossipsub", "mdns", "noise", "macros", "tcp", "yamux"] }
+libp2p-quic = { version="0.8.0-alpha", features = ["async-std"]}
+tokio = "1.29.1"
