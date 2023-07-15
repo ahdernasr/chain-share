@@ -1,9 +1,8 @@
 mod args;
 mod blockchain;
+mod input_handler;
 use async_std::io;
-use args::handle_args;
-use args::CLIArgs;
-use clap::Parser;
+use input_handler::handle_input;
 use std::io::{stdout, Write};
 use termion::clear;
 mod p2p;
@@ -20,6 +19,7 @@ use std::collections::hash_map::DefaultHasher;
 use std::error::Error;
 use std::hash::{Hash, Hasher};
 use std::time::Duration;
+use colored::*;
 
 // We create a custom network behaviour that combines Gossipsub and Mdns.
 #[derive(NetworkBehaviour)]
@@ -148,8 +148,10 @@ async fn p2p_task() -> Result<(), Box<dyn Error>> {
 async fn cli_task() {
     //TODO, add COLOR and ASCI-ART
     //CLI begins here
-    // let args = CLIArgs::parse();
+    // let _args = CLIArgs::parse();
     // handle_args(args);
+
+    println!("{}", "Welcome to ChainShare".red());
 
     // Activate Input Stream
     let stdin = io::stdin();
@@ -164,7 +166,7 @@ async fn cli_task() {
                     break; // Exit loop if no more input
                 }
                 // Process the user input
-                println!("You entered: {}", input.trim());
+                handle_input(input.trim());
             }
             Err(error) => {
                 eprintln!("Error reading input: {}", error);
