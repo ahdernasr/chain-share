@@ -3,6 +3,7 @@ use clap:: {
     Parser,
     Subcommand
 };
+use std::fs;
 
 #[derive(Debug, Parser)]
 #[clap(author, version, about)]
@@ -87,6 +88,8 @@ pub fn handle_args(args: CLIArgs) {
         EntityType::Mine(mine_command) => {
             let (name, path) = (mine_command.name, mine_command.path);
             println!("File Name: {}, File Path: {}", name, path);
+            let data = fs::read_to_string(path).expect("Unable to read file");
+            println!("{}", data);
             // Todo
         } 
         EntityType::Retrieve(retrieve_command) => {

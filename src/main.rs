@@ -5,17 +5,18 @@ use args::handle_args;
 use clap::Parser;
 use std::io::{stdout, Write};
 use termion::clear;
-
 fn main() {
 
-    //to-do, add Windows support
+    //TODO, add Windows support
     // Clear the command line (Unix-based Systems)
     print!("{}", clear::All);
     stdout().flush().unwrap();
 
+    //TODO, add COLOR and ASCI-ART 
     //CLI begins here
     let args = CLIArgs::parse();
     handle_args(args)
+
 }
 
 // let mut BC: blockchain::BlockChain = blockchain::BlockChain::new();
