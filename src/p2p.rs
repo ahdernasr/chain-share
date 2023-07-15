@@ -1,4 +1,3 @@
-use async_std::io;
 use futures::{future::Either, prelude::*, select};
 use libp2p::{
     core::{muxing::StreamMuxerBox, transport::OrTransport, upgrade},
@@ -13,14 +12,16 @@ use std::error::Error;
 use std::hash::{Hash, Hasher};
 use std::time::Duration;
 
-// We create a custom network behaviour that combines Gossipsub and Mdns.
+// Custom network behaviour that combines Gossipsub and Mdns protocols
 #[derive(NetworkBehaviour)]
 struct MyBehaviour {
     gossipsub: gossipsub::Behaviour,
     mdns: mdns::async_io::Behaviour,
 }
 
-pub async fn function() -> Result<(), Box<dyn Error>> {
+// Based off of rust-libp2p's messaging example
+// Starting an asychonchronous p2p task
+pub async fn p2p_task() -> Result<(), Box<dyn Error>> {
     // Create a random PeerId
     let id_keys = identity::Keypair::generate_ed25519();
     let local_peer_id = PeerId::from(id_keys.public());
@@ -29,7 +30,9 @@ pub async fn function() -> Result<(), Box<dyn Error>> {
     // Set up an encrypted DNS-enabled TCP Transport over the yamux protocol.
     let tcp_transport = tcp::async_io::Transport::new(tcp::Config::default().nodelay(true))
         .upgrade(upgrade::Version::V1Lazy)
-        .authenticate(noise::Config::new(&id_keys).expect("signing libp2p-noise static keypair"))
+        .authenticate(
+            noise::Config::new(&id_keys).expect("signing libp2p-noise static keypair"),
+        )
         .multiplex(yamux::Config::default())
         .timeout(std::time::Duration::from_secs(20))
         .boxed();
@@ -66,11 +69,11 @@ pub async fn function() -> Result<(), Box<dyn Error>> {
     // Create a Gossipsub topic
     let topic = gossipsub::IdentTopic::new("test-net");
     // subscribes to our topic
-    gossipsub.subscribe(&topic)?;
+    gossipsub.subscribe(&topic).unwrap();
 
     // Create a Swarm to manage peers and events
     let mut swarm = {
-        let mdns = mdns::async_io::Behaviour::new(mdns::Config::default(), local_peer_id)?;
+        let mdns = mdns::async_io::Behaviour::new(mdns::Config::default(), local_peer_id).unwrap();
         let behaviour = MyBehaviour { gossipsub, mdns };
         SwarmBuilder::with_async_std_executor(transport, behaviour, local_peer_id).build()
     };
@@ -79,8 +82,8 @@ pub async fn function() -> Result<(), Box<dyn Error>> {
     // let mut stdin = io::BufReader::new(io::stdin()).lines().fuse();
 
     // Listen on all interfaces and whatever port the OS assigns
-    swarm.listen_on("/ip4/0.0.0.0/udp/0/quic-v1".parse()?)?;
-    swarm.listen_on("/ip4/0.0.0.0/tcp/0".parse()?)?;
+    swarm.listen_on("/ip4/0.0.0.0/udp/0/quic-v1".parse().unwrap()).unwrap();
+    swarm.listen_on("/ip4/0.0.0.0/tcp/0".parse().unwrap()).unwrap();
 
     // Kick it off
     loop {
@@ -121,5 +124,5 @@ pub async fn function() -> Result<(), Box<dyn Error>> {
                 _ => {}
             }
         }
-    }
+};
 }
