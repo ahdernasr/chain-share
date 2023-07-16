@@ -1,14 +1,19 @@
 mod blockchain;
+use blockchain::BlockChain;
 mod cli;
 use cli::cli_task;
 mod p2p;
-use p2p::p2p_task;
-use std::io::{stdout, Write};
+// use core::num::dec2flt::number;
+// use p2p::{number_of_peers, p2p_task};
+use p2p::{p2p_task};
 use std::error::Error;
+use std::io::{stdout, Write};
 use termion::clear;
 
 #[async_std::main]
 async fn main() -> Result<(), Box<dyn Error>> {
+    // let blockChain = initialiseBlockChain();
+
     // Clear the command line (Unix-based Systems) **TODO ADD WINDOWS SUPPORT**
     print!("{}", clear::All);
     stdout().flush().unwrap();
@@ -18,6 +23,24 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     Ok(())
 }
+
+// fn initialiseBlockChain() -> BlockChain {
+//     // Check peers
+//     if number_of_peers() > 1 {
+//         // Request Longest Chain
+//         // Create local BlockChain object based on chain data recieved
+//         return BlockChain;
+//     } else {
+//         // If only one peer
+//         //      // FUTURE: check local SQL database for the BlockChain
+//         //      // If there is an SQL blockchain
+//         //         // Create new BlockChain object with only genesis block
+//         //      // If there is none
+//                    //Create empty BlockChain object with only genesis block
+//     //         // FUTURE: Save to SQL
+//         return BlockChain;
+//     }
+// }
 
 // let mut BC: blockchain::BlockChain = blockchain::BlockChain::new();
 // let mined_block: blockchain::Block = blockchain::Block::new(2, "test file".to_string(), "none".to_string(),BC.blocks[0].current_hash.to_owned());
