@@ -1,7 +1,8 @@
 mod input_handler;
-use input_handler::handle_input;
 use async_std::io;
+use async_std::task;
 use futures::{future::Either, prelude::*, select};
+use input_handler::handle_input;
 use libp2p::{
     core::{muxing::StreamMuxerBox, transport::OrTransport, upgrade},
     gossipsub, identity, mdns, noise,
@@ -21,6 +22,19 @@ struct MyBehaviour {
     gossipsub: gossipsub::Behaviour,
     mdns: mdns::async_io::Behaviour,
 }
+
+pub static mut PEERS_COUNT: u32 = 0;
+
+pub fn get_peers_count() -> u32 {
+    unsafe { PEERS_COUNT }
+}
+
+// pub fn publish_message(message: String) {
+//     if let Err(e) = swarm
+//     .behaviour_mut().gossipsub
+//     .publish(topic.clone(), command.as_bytes()) {
+//     println!("Publish error: {e:?}");
+// }
 
 pub async fn p2p_task() -> Result<(), Box<dyn Error>> {
     // Create a random PeerId
@@ -90,7 +104,7 @@ pub async fn p2p_task() -> Result<(), Box<dyn Error>> {
         select! {
             line = stdin.select_next_some() => {
                 let input = line.unwrap().clone();
-                let to_publish: Option<&str> =  handle_input(&input); 
+                let to_publish: Option<&str> =  handle_input(&input);
                 match to_publish {
                     Some(command) => {
                         if let Err(e) = swarm
@@ -107,22 +121,40 @@ pub async fn p2p_task() -> Result<(), Box<dyn Error>> {
                     for (peer_id, _multiaddr) in list {
                         println!("mDNS discovered a new peer: {peer_id}");
                         swarm.behaviour_mut().gossipsub.add_explicit_peer(&peer_id);
+                        unsafe {PEERS_COUNT += 1;}
+                    }
+                    //Todo - Find a better fix
+                    //Requests blockchain in a loop Loop is used because the first iterations might not work due to a peer error
+                    loop {
+                        task::sleep(Duration::from_secs(10)).await;
+                        if let Err(e) = swarm
+                        .behaviour_mut().gossipsub
+                        .publish(topic.clone(), "Requesting Blockchain".as_bytes()) {
+                        println!("Publish error: {e:?}");
+                        } else {
+                            break;
+                        }
                     }
                 },
                 SwarmEvent::Behaviour(MyBehaviourEvent::Mdns(mdns::Event::Expired(list))) => {
                     for (peer_id, _multiaddr) in list {
                         println!("mDNS discover peer has expired: {peer_id}");
                         swarm.behaviour_mut().gossipsub.remove_explicit_peer(&peer_id);
+                        unsafe {PEERS_COUNT += 1;}
                     }
                 },
                 SwarmEvent::Behaviour(MyBehaviourEvent::Gossipsub(gossipsub::Event::Message {
                     propagation_source: peer_id,
                     message_id: id,
                     message,
-                })) => println!(
+                })) => {
+                    // Message types:
+                    // 1. Blockchain request -> Publish blockchain
+                    // 2. New block added -> Add blockchain to local instance of block chain
+                    println!(
                         "Got message: '{}' with id: {id} from peer: {peer_id}",
                         String::from_utf8_lossy(&message.data),
-                    ),
+                    )},
                 SwarmEvent::NewListenAddr { address, .. } => {
                     println!("Local node is listening on {address}");
                 }

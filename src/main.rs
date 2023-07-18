@@ -5,7 +5,7 @@ use cli::cli_task;
 mod p2p;
 // use core::num::dec2flt::number;
 // use p2p::{number_of_peers, p2p_task};
-use p2p::{p2p_task};
+use p2p::{p2p_task, get_peers_count};
 use std::error::Error;
 use std::io::{stdout, Write};
 use termion::clear;
@@ -26,20 +26,20 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
 // fn initialiseBlockChain() -> BlockChain {
 //     // Check peers
-//     if number_of_peers() > 1 {
-//         // Request Longest Chain
-//         // Create local BlockChain object based on chain data recieved
-//         return BlockChain;
-//     } else {
-//         // If only one peer
-//         //      // FUTURE: check local SQL database for the BlockChain
-//         //      // If there is an SQL blockchain
-//         //         // Create new BlockChain object with only genesis block
-//         //      // If there is none
-//                    //Create empty BlockChain object with only genesis block
-//     //         // FUTURE: Save to SQL
-//         return BlockChain;
-//     }
+//         if get_peers_count() > 1 {
+//             // Request Longest Chain
+//             // Create local BlockChain object based on chain data recieved
+//             return BlockChain;
+//         } else {
+//             // If only one peer
+//             //      // FUTURE: check local SQL database for the BlockChain
+//             //      // If there is an SQL blockchain
+//             //         // Create new BlockChain object with only genesis block
+//             //      // If there is none
+//             //Create empty BlockChain object with only genesis block
+//             //         // FUTURE: Save to SQL
+//             return BlockChain;
+//         }
 // }
 
 // let mut BC: blockchain::BlockChain = blockchain::BlockChain::new();
