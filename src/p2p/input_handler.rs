@@ -1,4 +1,5 @@
-pub fn handle_input(input: &str) {
+// This function takes in the user input and handles it, if there is something to be published then that is returned 
+pub fn handle_input(input: &str) -> Option<&str> {
     // Splits input into multiple parameters
     // Note: Always show selection
     let input_iterator: Vec<&str> = input.split(' ').collect();
@@ -12,7 +13,9 @@ pub fn handle_input(input: &str) {
                     match iterator.next() {
                         Some(option) => {
                             match option {
-                                &"blocks" => {} //show number of blocks in blockchain and info of all blocks
+                                &"blocks" => {
+                                    return Some("Blocks 50")
+                                } //show number of blocks in blockchain and info of all blocks
                                 &"storage" => {} //show storage info by blockchain
                                 &"peers" => {} //show peers ID list and number of peers
                                 _ => {
@@ -64,4 +67,5 @@ pub fn handle_input(input: &str) {
             println!("Invalid input - refer to guide.")
         }
     }
+    return Some("test");
 }
