@@ -12,6 +12,10 @@ use termion::clear;
 
 #[async_std::main]
 async fn main() -> Result<(), Box<dyn Error>> {
+
+    // let P2P: P2P = P2P::new();
+    // let (_p2p_result, _cli_result) = futures::join!(P2P.run_task(), cli_task());
+
     // let blockChain = initialiseBlockChain();
 
     // Clear the command line (Unix-based Systems) **TODO ADD WINDOWS SUPPORT**
@@ -28,16 +32,17 @@ async fn main() -> Result<(), Box<dyn Error>> {
 //     // Check peers
 //         if get_peers_count() > 1 {
 //             // Request Longest Chain
+//                // publish message "request chain"
 //             // Create local BlockChain object based on chain data recieved
 //             return BlockChain;
 //         } else {
 //             // If only one peer
-//             //      // FUTURE: check local SQL database for the BlockChain
-//             //      // If there is an SQL blockchain
-//             //         // Create new BlockChain object with only genesis block
-//             //      // If there is none
-//             //Create empty BlockChain object with only genesis block
-//             //         // FUTURE: Save to SQL
+//                  // FUTURE: check local SQL database for the BlockChain
+//                  // If there is an SQL blockchain
+//                     // Create new BlockChain object with only genesis block
+//                  // If there is none
+//                  //Create empty BlockChain object with only genesis block
+//                  // FUTURE: Save to SQL
 //             return BlockChain;
 //         }
 // }
