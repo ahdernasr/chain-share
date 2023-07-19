@@ -5,7 +5,7 @@ use cli::cli_task;
 mod p2p;
 // use core::num::dec2flt::number;
 // use p2p::{number_of_peers, p2p_task};
-use p2p::{p2p_task, get_peers_count};
+use p2p::P2P;
 use std::error::Error;
 use std::io::{stdout, Write};
 use termion::clear;
@@ -13,8 +13,8 @@ use termion::clear;
 #[async_std::main]
 async fn main() -> Result<(), Box<dyn Error>> {
 
-    // let P2P: P2P = P2P::new();
-    // let (_p2p_result, _cli_result) = futures::join!(P2P.run_task(), cli_task());
+    let P2P: P2P = P2P::new();
+    let (_p2p_result, _cli_result) = futures::join!(P2P.run_task(), cli_task());
 
     // let blockChain = initialiseBlockChain();
 
