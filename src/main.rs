@@ -23,7 +23,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     stdout().flush().unwrap();
 
     // Run the CLI input stream and P2P network asynchronously
-    let (_p2p_result, _cli_result) = futures::join!(p2p_task(), cli_task());
+    let (_p2p_result, _cli_result) = futures::join!(P2P.run_task(), cli_task());
 
     Ok(())
 }

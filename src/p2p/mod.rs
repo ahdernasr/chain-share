@@ -14,6 +14,7 @@ use libp2p_quic as quic;
 use std::collections::hash_map::DefaultHasher;
 use std::error::Error;
 use std::hash::{Hash, Hasher};
+use libp2p::Transport;
 
 // use Hasher::IdentityHash;
 use std::time::Duration;
@@ -33,7 +34,7 @@ struct MyBehaviour {
 struct IdentityHash {}
 
 impl P2P {
-    pub fn new(&self) -> P2P {
+    pub fn new() -> P2P {
                 // Create a random PeerId
                 let id_keys = identity::Keypair::generate_ed25519();
                 let local_peer_id = PeerId::from(id_keys.public());
@@ -91,12 +92,11 @@ impl P2P {
         return P2P {
             swarm: create_swarm,
             peers: 0,
-            topic: topic
         }
     }
 
-    pub async fn run_task(&self) -> Result<(), Box<dyn Error>> {
-
+    pub async fn run_task(mut self) -> Result<(), Box<dyn Error>> {
+        let topic = gossipsub::IdentTopic::new("test-net");
         // Read full lines from stdin
         let mut stdin = io::BufReader::new(io::stdin()).lines().fuse();
 
@@ -118,7 +118,7 @@ impl P2P {
                         Some(command) => {
                             if let Err(e) = self.swarm
                             .behaviour_mut().gossipsub
-                            .publish(self.topic.clone(), command.as_bytes()) {
+                            .publish(topic.clone(), command.as_bytes()) {
                             println!("Publish error: {e:?}");
                         }
                         }
@@ -138,7 +138,7 @@ impl P2P {
                             task::sleep(Duration::from_secs(10)).await;
                             if let Err(e) = self.swarm
                             .behaviour_mut().gossipsub
-                            .publish(self.topic.clone(), "Requesting Blockchain".as_bytes()) {
+                            .publish(topic.clone(), "Requesting Blockchain".as_bytes()) {
                             println!("Publish error: {e:?}");
                             } else {
                                 break;
@@ -178,10 +178,11 @@ impl P2P {
     }
 
     pub fn publish_message(&self, message: String) {
+        let topic = gossipsub::IdentTopic::new("test-net");
         if let Err(e) = self.swarm
             .behaviour_mut()
             .gossipsub
-            .publish(topic.clone(), command.as_bytes())
+            .publish(topic.clone(), message.as_bytes())
         {
             println!("Publish error: {e:?}");
         }
