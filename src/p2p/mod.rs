@@ -177,7 +177,7 @@ impl P2P {
         self.peers
     }
 
-    pub fn publish_message(&self, message: String) {
+    pub fn publish_message(mut self, message: String) {
         let topic = gossipsub::IdentTopic::new("test-net");
         if let Err(e) = self.swarm
             .behaviour_mut()

@@ -14,7 +14,7 @@ use termion::clear;
 async fn main() -> Result<(), Box<dyn Error>> {
 
     let P2P: P2P = P2P::new();
-    let (_p2p_result, _cli_result) = futures::join!(P2P.run_task(), cli_task());
+    // let (_p2p_result, _cli_result) = futures::join!(P2P.run_task(), cli_task());
 
     // let blockChain = initialiseBlockChain();
 
