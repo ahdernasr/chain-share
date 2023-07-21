@@ -134,16 +134,16 @@ impl P2P {
                         }
                         //Todo - Find a better fix
                         //Requests blockchain in a loop Loop is used because the first iterations might not work due to a peer error
-                        loop {
-                            task::sleep(Duration::from_secs(10)).await;
-                            if let Err(e) = self.swarm
-                            .behaviour_mut().gossipsub
-                            .publish(topic.clone(), "Requesting Blockchain".as_bytes()) {
-                            println!("Publish error: {e:?}");
-                            } else {
-                                break;
-                            }
-                        }
+                        // loop {
+                        //     task::sleep(Duration::from_secs(10)).await;
+                        //     if let Err(e) = self.swarm
+                        //     .behaviour_mut().gossipsub
+                        //     .publish(topic.clone(), "Requesting Blockchain".as_bytes()) {
+                        //     println!("Publish error: {e:?}");
+                        //     } else {
+                        //         break;
+                        //     }
+                        // }
                     },
                     SwarmEvent::Behaviour(MyBehaviourEvent::Mdns(mdns::Event::Expired(list))) => {
                         for (peer_id, _multiaddr) in list {
