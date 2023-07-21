@@ -20,18 +20,17 @@ use libp2p::Transport;
 use std::time::Duration;
 
 pub struct P2P {
-    swarm: Swarm<MyBehaviour>,
-    peers: u32,
+    pub swarm: Swarm<MyBehaviour>,
+    pub peers: u32,
     // topic: gossipsub::Topic<IdentityHash>
 }
 // We create a custom network behaviour that combines Gossipsub and Mdns.
 #[derive(NetworkBehaviour)]
-struct MyBehaviour {
+pub struct MyBehaviour {
     gossipsub: gossipsub::Behaviour,
     mdns: mdns::async_io::Behaviour,
 } 
 
-struct IdentityHash {}
 
 impl P2P {
     pub fn new() -> P2P {
@@ -175,16 +174,5 @@ impl P2P {
 
     pub fn get_peers_count(&self) -> u32 {
         self.peers
-    }
-
-    pub fn publish_message(mut self, message: String) {
-        let topic = gossipsub::IdentTopic::new("test-net");
-        if let Err(e) = self.swarm
-            .behaviour_mut()
-            .gossipsub
-            .publish(topic.clone(), message.as_bytes())
-        {
-            println!("Publish error: {e:?}");
-        }
     }
 }
