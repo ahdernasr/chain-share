@@ -1,5 +1,6 @@
 mod input_handler;
 mod blockchain;
+use blockchain::BlockChain;
 
 use async_std::io;
 use futures::{future::Either, prelude::*, select};
@@ -23,6 +24,7 @@ use rand::Rng;
 pub struct P2P {
     pub swarm: Swarm<MyBehaviour>,
     pub peers: u32,
+    pub blockchain: BlockChain,
 }
 // Custom network behaviour that combines Gossipsub and Mdns.
 #[derive(NetworkBehaviour)]
@@ -80,7 +82,7 @@ impl P2P {
                 // Create a Gossipsub topic
                 let topic = gossipsub::IdentTopic::new("test-net");
                 // subscribes to our topic
-                gossipsub.subscribe(&topic);
+                let _ = gossipsub.subscribe(&topic);
         
                 // Create a Swarm to manage peers and events
                 let create_swarm = {
@@ -88,9 +90,13 @@ impl P2P {
                     let behaviour = MyBehaviour { gossipsub, mdns };
                     SwarmBuilder::with_async_std_executor(transport, behaviour, local_peer_id).build()
                 };
+
+                //Initialise new blockchain (if longest chain exists this will be replaced)
+                let bc: blockchain::BlockChain = blockchain::BlockChain::new();
         return P2P {
             swarm: create_swarm,
             peers: 0,
+            blockchain: bc,
         }
     }
 
@@ -118,7 +124,11 @@ impl P2P {
                             if let Err(e) = self.swarm
                             .behaviour_mut().gossipsub
                             .publish(topic.clone(), command.as_bytes()) {
-                            println!("Publish error: {e:?}");
+                            // println!("Publish error: {e:?}");
+                            if input == "request blockchain" {
+                                println!("No peers, Creating own blockchain");
+                                println!("{:?}", self.blockchain);
+                            }
                         }
                         }
                         _ =>{}
