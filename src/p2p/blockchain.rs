@@ -125,7 +125,7 @@ impl BlockChain {
         let mut blockchain_string: String = String::from("");
         for block in self.blocks.iter() {
             let block_string = format!(
-                "Block Id: {}, Nonce: {}, File Name: {}, Previous Hash: {}, Block Hash: {}\n\n\n\n",
+                "Block Id: {}, Nonce: {}, File Name: {}, Previous Hash: {}, Block Hash: {}",
                 block.id,
                 block.nonce,
                 block.file_name,
