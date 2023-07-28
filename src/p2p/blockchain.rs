@@ -92,7 +92,7 @@ impl BlockChain {
                     let previous = chain.get(i - 1).unwrap();
                     let current = chain.get(i).unwrap();
                     if !self.block_is_valid(current, previous) {
-                        return false
+                        return false;
                     }
                 }
                 println!("The chain is valid");
@@ -101,7 +101,43 @@ impl BlockChain {
         }
     }
 
-    /* 
+    //Formats the blockchain to be sendable in string format 
+    pub fn to_sendable(&self) -> String {
+        let mut blockchain_string: String = String::from("");
+        for block in self.blocks.iter() {
+            //The % and $ are used as split seperators later on to be able to help in create a blockchain from the blockchain_string
+            let block_string = format!(
+                "{}%{}%{}%{}%{}%{}$",
+                block.id,
+                block.nonce,
+                block.file_name,
+                block.file_data,
+                block.previous_hash,
+                block.current_hash
+            );
+            blockchain_string.push_str(&block_string);
+        }
+        blockchain_string
+    }
+
+    //Formats the blockchain to be viewable in string format
+    pub fn to_viewable(&self) -> String {
+        let mut blockchain_string: String = String::from("");
+        for block in self.blocks.iter() {
+            let block_string = format!(
+                "Block Id: {}, Nonce: {}, File Name: {}, Previous Hash: {}, Block Hash: {}\n\n\n\n",
+                block.id,
+                block.nonce,
+                block.file_name,
+                block.previous_hash,
+                block.current_hash
+            );
+            blockchain_string.push_str(&block_string);
+        }
+        blockchain_string
+    }
+
+    /*
     //Implementation needs to be readjusted for multi-node chain selection
     fn chain_selector(&self, local: Vec<Block>, remote: Vec<Block>) -> Option<Vec<Block>> {
         let local_is_valid: bool = self.chain_is_valid(&local);

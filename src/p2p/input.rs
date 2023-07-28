@@ -1,5 +1,6 @@
-// This function takes in the user input and handles it, if there is something to be published then that is returned 
-pub fn handle_input(input: &str) -> Option<&str> {
+use crate::p2p::blockchain::BlockChain;
+// This function takes in the user input and handles it, if there is something to be published then that is returned
+pub fn handle_input<'a>(input: &'a str, blockchain: &BlockChain) -> Option<&'a str> {
     // Splits input into multiple parameters
     // Note: Always show selection
     let input_iterator: Vec<&str> = input.split(' ').collect();
@@ -9,32 +10,26 @@ pub fn handle_input(input: &str) -> Option<&str> {
     match iterator.next() {
         Some(option) => {
             match option {
-                &"request" => {
-                    match iterator.next() {
-                        Some(option) => {
-                            match option {
-                                &"blockchain" => {
-                                    return Some("LONGESTCHAIN")
-                                }
-                                _ => {
-                                    println!("Invalid command - use 'request blockchain to request the longest chain'")
-                                }
-                            }
-                        }
+                &"request" => match iterator.next() {
+                    Some(option) => match option {
+                        &"blockchain" => return Some("LONGESTCHAIN"),
                         _ => {
-                            println!("Invalid command - refer to guide")
+                            println!("Invalid command - use 'request blockchain to request the longest chain'")
                         }
+                    },
+                    _ => {
+                        println!("Invalid command - refer to guide")
                     }
-                }
+                },
                 &"view" => {
                     match iterator.next() {
                         Some(option) => {
                             match option {
                                 &"blocks" => {
-                                    return Some("Blocks 50")
+                                    println!("{:?}", blockchain.to_viewable());
                                 } //show number of blocks in blockchain and info of all blocks
                                 &"storage" => {} //show storage info by blockchain
-                                &"peers" => {} //show peers ID list and number of peers
+                                &"peers" => {}   //show peers ID list and number of peers
                                 _ => {
                                     //view 'view' help
                                 }
@@ -52,7 +47,6 @@ pub fn handle_input(input: &str) -> Option<&str> {
                             match iterator.next() {
                                 Some(option) => {
                                     let file_path = option;
-                                    
                                 }
                                 _ => {
                                     //invalid command, view 'upload' help
@@ -73,7 +67,7 @@ pub fn handle_input(input: &str) -> Option<&str> {
                             //invalid command, view 'upload' help
                         }
                     }
-                } 
+                }
                 &"info" => {} //show info about app
                 _ => {
                     println!("Invalid input - refer to guide.")
@@ -84,5 +78,5 @@ pub fn handle_input(input: &str) -> Option<&str> {
             println!("Invalid input - refer to guide.")
         }
     }
-    return Some("test");
+    return None;
 }

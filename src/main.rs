@@ -1,15 +1,14 @@
 mod p2p;
+use colored::*;
 use p2p::P2P as p_2_p;
 use std::error::Error;
 use std::io::{stdout, Write};
 use termion::clear;
-use colored::*;
 
 // Auto-join publishing solution: tell user to manually request blockchain,
 // and dissallow any blockchain commands until the user requests the blockchain
 #[async_std::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-
     // Clear the command line (Unix-based Systems) **TODO ADD WINDOWS SUPPORT**
     print!("{}", clear::All);
     stdout().flush().unwrap();
@@ -19,7 +18,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Run the Blockchain Builder and P2P network asynchronously
     let mut p2p: p_2_p = p_2_p::new();
     let _ = p2p.run_task().await;
-    //NOTHING UNDER HERE WILL RUN 
+    //NOTHING UNDER HERE WILL RUN
 
     // let (_, __) = futures::join!(p2p.run_task(), blockchain_task());
     // let blockChain = initialiseBlockChain();
