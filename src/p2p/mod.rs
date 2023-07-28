@@ -172,6 +172,13 @@ impl P2P {
                         message_id: id,
                         message,
                     })) => {
+                            /*
+                            Key:
+                            Prefix 000 - Blockchain request receipt
+                            Prefix 111 - Block mined and added update
+                            Prefix 222 - Blockchain request answered and Blockchain sent
+                            */
+                        let message_data = String::from_utf8_lossy(&message.data).as_ref();
                         match String::from_utf8_lossy(&message.data).as_ref() {
                             //Handle a request for longest chain from peer
                             "LONGESTCHAIN" => {
