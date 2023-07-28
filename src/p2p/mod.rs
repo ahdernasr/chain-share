@@ -1,6 +1,7 @@
 mod input_handler;
+mod blockchain;
+
 use async_std::io;
-use async_std::task;
 use futures::{future::Either, prelude::*, select};
 use input_handler::handle_input;
 use libp2p::{
@@ -15,16 +16,15 @@ use std::collections::hash_map::DefaultHasher;
 use std::error::Error;
 use std::hash::{Hash, Hasher};
 use libp2p::Transport;
-
-// use Hasher::IdentityHash;
 use std::time::Duration;
+use rand::Rng;
 
+// Peer to peer object that controls most of the p2p network and blockchain functionality 
 pub struct P2P {
     pub swarm: Swarm<MyBehaviour>,
     pub peers: u32,
-    // topic: gossipsub::Topic<IdentityHash>
 }
-// We create a custom network behaviour that combines Gossipsub and Mdns.
+// Custom network behaviour that combines Gossipsub and Mdns.
 #[derive(NetworkBehaviour)]
 pub struct MyBehaviour {
     pub gossipsub: gossipsub::Behaviour,
@@ -55,13 +55,13 @@ impl P2P {
                         Either::Right((peer_id, muxer)) => (peer_id, StreamMuxerBox::new(muxer)),
                     })
                     .boxed();
-        
-                // To content-address message, we can take the hash of message and use it as an ID.
-                let message_id_fn = |message: &gossipsub::Message| {
-                    let mut s = DefaultHasher::new();
-                    message.data.hash(&mut s);
-                    gossipsub::MessageId::from(s.finish().to_string())
-                };
+    
+                //Creates a random message id for each message (ID is no longer tied to message value to allow duplicate message)
+                fn message_id_fn(_message: &gossipsub::Message) -> gossipsub::MessageId {
+                    let mut rng = rand::thread_rng();
+                    let random_id: String = (0..16).map(|_| rng.gen::<u8>().to_string()).collect();
+                    return gossipsub::MessageId::from(random_id);
+                }
         
                 // Set a custom gossipsub configuration
                 let gossipsub_config = gossipsub::ConfigBuilder::default()
@@ -104,7 +104,7 @@ impl P2P {
         self.swarm.listen_on("/ip4/0.0.0.0/tcp/0".parse()?)?;
 
         println!(
-            "Enter messages via STDIN and they will be sent to connected peers using Gossipsub"
+            "Use cmd 'request blockchain' to request longest chain from peers"
         );
 
         // Kick it off
@@ -156,16 +156,28 @@ impl P2P {
                         message_id: id,
                         message,
                     })) => {
+                        match String::from_utf8_lossy(&message.data).as_ref() {
+                            "LONGESTCHAIN" => {
+                                println!("Longest chain requested");
+                                if let Err(e) = self.swarm
+                                .behaviour_mut().gossipsub
+                                .publish(topic.clone(), "longest chain sent".as_bytes()) {
+                                println!("Publish error: {e:?}");
+                            }
+                            },
+                            _ => {
+                                println!(
+                                    "Got message: '{}' with id: {id} from peer: {peer_id}",
+                                    String::from_utf8_lossy(&message.data),
+                                )},
+                            }
+                        }
                         // Message types:
                         // 1. Blockchain request -> Publish blockchain
                         // 2. New block added -> Add blockchain to local instance of block chain
-                        println!(
-                            "Got message: '{}' with id: {id} from peer: {peer_id}",
-                            String::from_utf8_lossy(&message.data),
-                        )},
-                    SwarmEvent::NewListenAddr { address, .. } => {
-                        println!("Local node is listening on {address}");
-                    }
+                    // SwarmEvent::NewListenAddr { address, .. } => {
+                    //     // println!("Local node is listening on {address}");
+                    // }
                     _ => {}
                 }
             }

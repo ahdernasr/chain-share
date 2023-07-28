@@ -9,6 +9,23 @@ pub fn handle_input(input: &str) -> Option<&str> {
     match iterator.next() {
         Some(option) => {
             match option {
+                &"request" => {
+                    match iterator.next() {
+                        Some(option) => {
+                            match option {
+                                &"blockchain" => {
+                                    return Some("LONGESTCHAIN")
+                                }
+                                _ => {
+                                    println!("Invalid command - use 'request blockchain to request the longest chain'")
+                                }
+                            }
+                        }
+                        _ => {
+                            println!("Invalid command - refer to guide")
+                        }
+                    }
+                }
                 &"view" => {
                     match iterator.next() {
                         Some(option) => {

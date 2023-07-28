@@ -20,3 +20,4 @@ libp2p-quic = { version="0.8.0-alpha", features = ["async-std"]}
 tokio = "1.29.1"
 colored = "2"
 lazy_static = "1.4"
+rand = "0.8.5"
