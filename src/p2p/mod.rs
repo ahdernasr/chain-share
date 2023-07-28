@@ -27,8 +27,8 @@ pub struct P2P {
 // We create a custom network behaviour that combines Gossipsub and Mdns.
 #[derive(NetworkBehaviour)]
 pub struct MyBehaviour {
-    gossipsub: gossipsub::Behaviour,
-    mdns: mdns::async_io::Behaviour,
+    pub gossipsub: gossipsub::Behaviour,
+    pub mdns: mdns::async_io::Behaviour,
 } 
 
 
@@ -94,7 +94,7 @@ impl P2P {
         }
     }
 
-    pub async fn run_task(mut self) -> Result<(), Box<dyn Error>> {
+    pub async fn run_task(&mut self) -> Result<(), Box<dyn Error>> {
         let topic = gossipsub::IdentTopic::new("test-net");
         // Read full lines from stdin
         let mut stdin = io::BufReader::new(io::stdin()).lines().fuse();

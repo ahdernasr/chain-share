@@ -11,14 +11,20 @@ use std::sync::Mutex;
 use std::error::Error;
 use std::io::{stdout, Write};
 use termion::clear;
+use p2p::MyBehaviour;
+use libp2p::{
+    gossipsub, mdns,
+    swarm::NetworkBehaviour,
+    swarm::{Swarm}
+};
 
 // Auto-join publishing solution: tell user to manually request blockchain,
 // and dissallow any blockchain commands until the user requests the blockchain
 #[async_std::main]
 async fn main() -> Result<(), Box<dyn Error>> {
 
-    let P2P: P2P = P2P::new();
-    let swarm_instance = &P2P.swarm;
+    let mut P2P: P2P = P2P::new();
+    let mut swarm_instance = &P2P.swarm;
     // let (_p2p_result, _cli_result) = futures::join!(P2P.run_task(), cli_task());
 
     // let blockChain = initialiseBlockChain();
@@ -28,14 +34,18 @@ async fn main() -> Result<(), Box<dyn Error>> {
     stdout().flush().unwrap();
 
     // Run the CLI input stream and P2P network asynchronously
-    let (_p2p_result, _cli_result) = futures::join!(P2P.run_task(), cli_task());
+    // let (_p2p_result, _cli_result) = futures::join!(&P2P.run_task(), cli_task());
+    
+    let _ = &P2P.run_task().await;
+    // println!(":?", &P2P.get_peers_count());
+    // publish_message(swarm_instance, "Hello World!".to_string());
 
     Ok(())
 }
 
-// pub fn publish_message(swarm: , message: String) {
+// pub fn publish_message(swarm: Swarm<MyBehaviour>, message: String) {
 //     let topic = gossipsub::IdentTopic::new("test-net");
-//     if let Err(e) = self.swarm
+//     if let Err(e) = swarm
 //         .behaviour_mut()
 //         .gossipsub
 //         .publish(topic.clone(), message.as_bytes())
@@ -67,7 +77,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 //     Ok(())
 // }
 
-// // Define a new function to run the P2P task with access to the shared P2P instance
+// Define a new function to run the P2P task with access to the shared P2P instance
 // async fn run_p2p_task(p2p: Arc<Mutex<P2P>>) {
 //     let p2p = p2p.lock(); // Acquire the lock on P2P
 //     p2p.unwrap().run_task(); // Access and run the P2P task
