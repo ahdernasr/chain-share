@@ -1,6 +1,6 @@
 use crate::p2p::blockchain::BlockChain;
 // This function takes in the user input and handles it, if there is something to be published then that is returned
-pub fn handle_input<'a>(input: &'a str, blockchain: &BlockChain) -> Option<&'a str> {
+pub fn handle_input<'a>(input: &'a str, blockchain: &BlockChain) -> Option<String> {
     // Splits input into multiple parameters
     // Note: Always show selection
     let input_iterator: Vec<&str> = input.split(' ').collect();
@@ -12,7 +12,7 @@ pub fn handle_input<'a>(input: &'a str, blockchain: &BlockChain) -> Option<&'a s
             match option {
                 &"request" => match iterator.next() {
                     Some(option) => match option {
-                        &"blockchain" => return Some("000"),
+                        &"blockchain" => return Some("000".to_string()),
                         _ => {
                             println!("Invalid command - use 'request blockchain to request the longest chain'")
                         }
@@ -47,6 +47,8 @@ pub fn handle_input<'a>(input: &'a str, blockchain: &BlockChain) -> Option<&'a s
                             match iterator.next() {
                                 Some(option) => {
                                     let file_path = option;
+                                    let string: String = format!("111%{}%{}", &file_name, &file_path);
+                                    return Some(string.clone());
                                 }
                                 _ => {
                                     //invalid command, view 'upload' help

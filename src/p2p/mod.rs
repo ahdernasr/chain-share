@@ -1,9 +1,8 @@
 mod blockchain;
 mod input;
 mod parser;
-use parser::blockchain_parser;
-use blockchain::BlockChain;
 use async_std::io;
+use blockchain::{Block, BlockChain};
 use futures::{future::Either, prelude::*, select};
 use input::handle_input;
 use libp2p::Transport;
@@ -130,19 +129,50 @@ impl P2P {
             select! {
                 line = stdin.select_next_some() => {
                     let input = line.unwrap().clone();
-                    let to_publish: Option<&str> =  handle_input(&input, &self.blockchain);
+                    let to_publish: Option<String> =  handle_input(&input, &self.blockchain);
                     match to_publish {
                         Some(command) => {
-                            if let Err(e) = self.swarm
-                            .behaviour_mut().gossipsub
-                            .publish(topic.clone(), command.as_bytes()) {
-                            //If there is an error in request blockchain, use own blockchain instance
-                            if input == "request blockchain" {
-                                println!("No peers, Creating own blockchain");
-                                println!("{:?}", self.blockchain);
-                            } else {
-                                println!("Publish error: {e:?}");
+                            match &command[0..3] {
+                                //Initiate blockchain request
+                                "000" => {
+                                    if let Err(e) = self.swarm
+                                    .behaviour_mut().gossipsub
+                                    .publish(topic.clone(), command.as_bytes()) {
+                                    //If there is an error in request blockchain, use own blockchain instance
+                                    if input == "request blockchain" {
+                                        println!("No peers, Creating own blockchain");
+                                        println!("{:?}", self.blockchain);
+                                    } else {
+                                        println!("Publish error: {e:?}");
+                                    }
+                                }
+                                //Initiate adding mining new block then publishing it
+                            },
+                                "111" => {
+                                    let split_command = command.split("%").collect::<Vec<&str>>();
+                                    let file_name = split_command[1];
+                                    let file_path = split_command[2];
+                                    let mined_block: blockchain::Block = blockchain::Block::new(
+                                        4,
+                                        file_name.to_string(),
+                                        file_path.to_string(),
+                                        self.blockchain.blocks[2].current_hash.to_owned(),
+                                    );
+                                    //add error checking to avoid publishing if block is invalid
+                                    self.blockchain.add_block(mined_block);
+                                    if let Err(e) = self.swarm
+                                    .behaviour_mut().gossipsub
+                                    .publish(topic.clone(), self.blockchain.blocks[self.blockchain.blocks.len()-1].to_sendable().as_bytes()) {
+                                        println!("Publish error: {e:?}");
+                                    }
+                            },
+                            _ => {
+
                             }
+                            //create a nested match statement here based on the command
+                            // publish commands:
+                            //  upload
+                            //  request blockchain
                         }
                         }
                         _ =>{}
@@ -197,11 +227,20 @@ impl P2P {
                                 println!("Publish error: {e:?}");
                             }
                             },
+                            "111" => {
+                                println!("Block recieved");
+                                let temp_block: Block = parser::block_parser(String::from_utf8_lossy(&message.data).to_string());
+                                println!("{:?}", temp_block)
+                                //if block is invalid, could indicate that local blockchain instance is outdated,
+                                //so spam prompt user to request blockchain
+                            }
                             "222" => {
                                 println!("Blockchain recieved!");
-                                let temp_bc: BlockChain = blockchain_parser(String::from_utf8_lossy(&message.data).to_string());
-                                println!("{:?}", temp_bc)
-                                //Parse into a blockchain object 
+                                let temp_bc: BlockChain = parser::blockchain_parser(String::from_utf8_lossy(&message.data).to_string());
+                                if temp_bc.blocks.len() > self.blockchain.blocks.len() {
+                                    self.blockchain = temp_bc;
+                                }
+                                //Parse into a blockchain object
                                 //If blockchain.length is bigger than the local instance, update it
                                 //Confirm blockchain update
                             }

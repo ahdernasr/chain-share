@@ -200,6 +200,20 @@ impl Block {
         };
     }
 
+    pub fn to_sendable(&self) -> String {
+            //The % and $ are used as split seperators later on to be able to help in create a blockchain from the blockchain_string
+            let block_string = format!(
+                "111{}%{}%{}%{}%{}%{}$",
+                self.id,
+                self.nonce,
+                self.file_name,
+                self.file_data,
+                self.previous_hash,
+                self.current_hash
+            );
+        block_string
+    }
+
     pub fn mine(id: u64, previous_hash: &str, file_data: &str) -> (u64, String) {
         println!("Mining...");
         let mut nonce: u64 = 1;
