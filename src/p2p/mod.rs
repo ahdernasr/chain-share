@@ -153,10 +153,10 @@ impl P2P {
                                     let file_name = split_command[1];
                                     let file_path = split_command[2];
                                     let mined_block: blockchain::Block = blockchain::Block::new(
-                                        4,
+                                        self.blockchain.blocks[self.blockchain.blocks.len()-1].id+1,
                                         file_name.to_string(),
                                         file_path.to_string(),
-                                        self.blockchain.blocks[2].current_hash.to_owned(),
+                                        self.blockchain.blocks[self.blockchain.blocks.len()-1].current_hash.to_owned(),
                                     );
                                     //add error checking to avoid publishing if block is invalid
                                     self.blockchain.add_block(mined_block);
@@ -230,7 +230,7 @@ impl P2P {
                             "111" => {
                                 println!("Block recieved");
                                 let temp_block: Block = parser::block_parser(String::from_utf8_lossy(&message.data).to_string());
-                                println!("{:?}", temp_block)
+                                self.blockchain.add_block(temp_block);
                                 //if block is invalid, could indicate that local blockchain instance is outdated,
                                 //so spam prompt user to request blockchain
                             }
