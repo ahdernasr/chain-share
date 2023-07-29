@@ -3,14 +3,14 @@ use colored::*;
 use p2p::P2P as p_2_p;
 use std::error::Error;
 use std::io::{stdout, Write};
-use termion::clear;
+// use termion::clear;
 
 // Auto-join publishing solution: tell user to manually request blockchain,
 // and dissallow any blockchain commands until the user requests the blockchain
 #[async_std::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     // Clear the command line (Unix-based Systems) **TODO ADD WINDOWS SUPPORT**
-    print!("{}", clear::All);
+    // print!("{}", clear::All);
     stdout().flush().unwrap();
 
     println!("{}", "Welcome to ChainShare".red().bold());
