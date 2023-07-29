@@ -3,7 +3,6 @@ use colored::*;
 use p2p::P2P as p_2_p;
 use std::error::Error;
 use std::io::{stdout, Write};
-// use termion::clear;
 
 // Auto-join publishing solution: tell user to manually request blockchain,
 // and dissallow any blockchain commands until the user requests the blockchain
