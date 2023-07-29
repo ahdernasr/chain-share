@@ -103,11 +103,11 @@ impl BlockChain {
 
     //Formats the blockchain to be sendable in string format 
     pub fn to_sendable(&self) -> String {
-        let mut blockchain_string: String = String::from("");
+        let mut blockchain_string: String = String::from("222");
         for block in self.blocks.iter() {
             //The % and $ are used as split seperators later on to be able to help in create a blockchain from the blockchain_string
             let block_string = format!(
-                "222{}%{}%{}%{}%{}%{}$",
+                "{}%{}%{}%{}%{}%{}$",
                 block.id,
                 block.nonce,
                 block.file_name,
@@ -184,6 +184,19 @@ impl Block {
             file_data,
             previous_hash,
             current_hash: hash,
+        };
+    }
+
+    //Used when creating a blockchain instance for an already exisiting blockchain in parser
+    pub fn new_mined_block(id: u64, nonce: u64, file_name: String, file_data: String, previous_hash: String, current_hash: String) -> Block {
+
+        return Block {
+            id,
+            nonce,
+            file_name,
+            file_data,
+            previous_hash,
+            current_hash,
         };
     }
 

@@ -1,7 +1,8 @@
 mod blockchain;
 mod input;
+mod parser;
+use parser::blockchain_parser;
 use blockchain::BlockChain;
-
 use async_std::io;
 use futures::{future::Either, prelude::*, select};
 use input::handle_input;
@@ -98,6 +99,13 @@ impl P2P {
             bc.blocks[0].current_hash.to_owned(),
         );
         bc.add_block(mined_block);
+        let mined_block: blockchain::Block = blockchain::Block::new(
+            3,
+            "test file 2 ".to_string(),
+            "none none".to_string(),
+            bc.blocks[1].current_hash.to_owned(),
+        );
+        bc.add_block(mined_block);
         return P2P {
             swarm: create_swarm,
             peers: 0,
@@ -190,7 +198,9 @@ impl P2P {
                             }
                             },
                             "222" => {
-                                println!("Blockchain recieved!")
+                                println!("Blockchain recieved!");
+                                let temp_bc: BlockChain = blockchain_parser(String::from_utf8_lossy(&message.data).to_string());
+                                println!("{:?}", temp_bc)
                                 //Parse into a blockchain object 
                                 //If blockchain.length is bigger than the local instance, update it
                                 //Confirm blockchain update
