@@ -178,10 +178,9 @@ impl P2P {
                             Prefix 111 - Block mined and added update
                             Prefix 222 - Blockchain request answered and Blockchain sent
                             */
-                        let message_data = String::from_utf8_lossy(&message.data).as_ref();
-                        match String::from_utf8_lossy(&message.data).as_ref() {
+                        match &String::from_utf8_lossy(&message.data).as_ref()[0..3] {
                             //Handle a request for longest chain from peer
-                            "LONGESTCHAIN" => {
+                            "000" => {
                                 println!("Longest chain requested...");
                                 println!("Sending local instance of blockchain.");
                                 if let Err(e) = self.swarm
@@ -190,6 +189,12 @@ impl P2P {
                                 println!("Publish error: {e:?}");
                             }
                             },
+                            "222" => {
+                                println!("Blockchain recieved!")
+                                //Parse into a blockchain object 
+                                //If blockchain.length is bigger than the local instance, update it
+                                //Confirm blockchain update
+                            }
                             _ => {
                                 println!(
                                     "Got message: '{}' with id: {id} from peer: {peer_id}",

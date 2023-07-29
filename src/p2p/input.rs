@@ -12,7 +12,7 @@ pub fn handle_input<'a>(input: &'a str, blockchain: &BlockChain) -> Option<&'a s
             match option {
                 &"request" => match iterator.next() {
                     Some(option) => match option {
-                        &"blockchain" => return Some("LONGESTCHAIN"),
+                        &"blockchain" => return Some("000"),
                         _ => {
                             println!("Invalid command - use 'request blockchain to request the longest chain'")
                         }

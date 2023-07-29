@@ -107,7 +107,7 @@ impl BlockChain {
         for block in self.blocks.iter() {
             //The % and $ are used as split seperators later on to be able to help in create a blockchain from the blockchain_string
             let block_string = format!(
-                "{}%{}%{}%{}%{}%{}$",
+                "222{}%{}%{}%{}%{}%{}$",
                 block.id,
                 block.nonce,
                 block.file_name,
