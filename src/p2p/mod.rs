@@ -17,6 +17,7 @@ use libp2p_quic as quic;
 use rand::Rng;
 use std::error::Error;
 use std::time::Duration;
+use std::collections::HashSet;
 
 // Peer to peer object that controls most of the p2p network and blockchain functionality
 pub struct P2P {
@@ -110,6 +111,7 @@ impl P2P {
 
         println!("Use cmd 'request blockchain' to request longest chain from peers");
 
+        let mut discovered_peers: HashSet<PeerId> = HashSet::new();
         // Kick it off
         loop {
             select! {
@@ -167,23 +169,18 @@ impl P2P {
                 event = self.swarm.select_next_some() => match event {
                     SwarmEvent::Behaviour(MyBehaviourEvent::Mdns(mdns::Event::Discovered(list))) => {
                         for (peer_id, _multiaddr) in list {
-                            println!("mDNS discovered a new peer: {peer_id}");
-                            self.swarm.behaviour_mut().gossipsub.add_explicit_peer(&peer_id);
-                            //Add peer to peer list
-                            self.peers.push(peer_id.to_string())
+                            if !discovered_peers.contains(&peer_id) {
+                                // Peer is not yet discovered, proceed with handling
+                                println!("mDNS discovered a new peer: {}", peer_id);
+                                self.swarm.behaviour_mut().gossipsub.add_explicit_peer(&peer_id);
+                                // Add peer to the peer list
+                                self.peers.push(peer_id.to_string());
+                                // Add the peer ID to the discovered_peers set
+                                discovered_peers.insert(peer_id.clone());
+            
+                                // Todo: Add any additional actions you want to perform on the newly discovered peer
+                            }
                         }
-                        //Todo - Find a better fix
-                        //Requests blockchain in a loop Loop is used because the first iterations might not work due to a peer error
-                        // loop {
-                        //     task::sleep(Duration::from_secs(10)).await;
-                        //     if let Err(e) = self.swarm
-                        //     .behaviour_mut().gossipsub
-                        //     .publish(topic.clone(), "Requesting Blockchain".as_bytes()) {
-                        //     println!("Publish error: {e:?}");
-                        //     } else {
-                        //         break;
-                        //     }
-                        // }
                     },
                     SwarmEvent::Behaviour(MyBehaviourEvent::Mdns(mdns::Event::Expired(list))) => {
                         for (peer_id, _multiaddr) in list {
