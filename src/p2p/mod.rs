@@ -21,7 +21,7 @@ use std::time::Duration;
 // Peer to peer object that controls most of the p2p network and blockchain functionality
 pub struct P2P {
     pub swarm: Swarm<MyBehaviour>,
-    pub peers: u32,
+    pub peers: Vec<String>,
     pub blockchain: BlockChain,
 }
 // Custom network behaviour that combines Gossipsub and Mdns.
@@ -91,23 +91,9 @@ impl P2P {
 
         //Initialise new blockchain (if longest chain exists this will be replaced)
         let mut bc: blockchain::BlockChain = blockchain::BlockChain::new();
-        let mined_block: blockchain::Block = blockchain::Block::new(
-            2,
-            "test file".to_string(),
-            "none".to_string(),
-            bc.blocks[0].current_hash.to_owned(),
-        );
-        bc.add_block(mined_block);
-        let mined_block: blockchain::Block = blockchain::Block::new(
-            3,
-            "test file 2 ".to_string(),
-            "none none".to_string(),
-            bc.blocks[1].current_hash.to_owned(),
-        );
-        bc.add_block(mined_block);
         return P2P {
             swarm: create_swarm,
-            peers: 0,
+            peers: vec![],
             blockchain: bc,
         };
     }
@@ -129,7 +115,7 @@ impl P2P {
             select! {
                 line = stdin.select_next_some() => {
                     let input = line.unwrap().clone();
-                    let to_publish: Option<String> =  handle_input(&input, &self.blockchain);
+                    let to_publish: Option<String> =  handle_input(&input, &self.blockchain, &self.peers);
                     match to_publish {
                         Some(command) => {
                             match &command[0..3] {
@@ -183,7 +169,8 @@ impl P2P {
                         for (peer_id, _multiaddr) in list {
                             println!("mDNS discovered a new peer: {peer_id}");
                             self.swarm.behaviour_mut().gossipsub.add_explicit_peer(&peer_id);
-                            self.peers += 1;
+                            //Add peer to peer list
+                            self.peers.push(peer_id.to_string())
                         }
                         //Todo - Find a better fix
                         //Requests blockchain in a loop Loop is used because the first iterations might not work due to a peer error
@@ -202,7 +189,9 @@ impl P2P {
                         for (peer_id, _multiaddr) in list {
                             println!("mDNS discover peer has expired: {peer_id}");
                             self.swarm.behaviour_mut().gossipsub.remove_explicit_peer(&peer_id);
-                            self.peers += 1;
+                            //Remove peer from peer list
+                            let index = self.peers.iter().position(|x| *x == peer_id.to_string()).unwrap();
+                            self.peers.remove(index);
                         }
                     },
                     SwarmEvent::Behaviour(MyBehaviourEvent::Gossipsub(gossipsub::Event::Message {
