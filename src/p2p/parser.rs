@@ -1,10 +1,24 @@
-use crate::p2p::blockchain::{Block, BlockChain};
+use crate::p2p::blockchain::{ Block, BlockChain };
+use std::fs;
+use std::path::Path;
 
-//takes in a path and reads the file to convert to string so
-//its sendeable across the blockchain
-// pub fn file_to_string(path: &str) -> String {
+// takes in a path and reads the file to convert to string so
+// its sendeable across the blockchain
+//Works with files encoded in UTF-8 or ASCII
+//Examples: .txt, .iini, .cfg, source code (.rs, .cpp, etc.), .html, .json, .md
+pub fn file_to_string(path: &str) -> Option<String> {
+    // Replace "your_absolute_file_path" with the actual absolute path of the file you want to read.
+    let file_path = Path::new(path);
 
-// }
+    // Attempt to read the contents of the file into a string.
+    match fs::read_to_string(file_path) {
+        Ok(contents) => { Some(contents) }
+        Err(err) => {
+            println!("{:?}", err);
+            None
+        }
+    }
+}
 
 // pub fn string_to_file(data: String, path: &str) {
 //     //Should download a file to path
@@ -32,7 +46,7 @@ pub fn block_parser(data: String) -> Block {
         block_data[2].to_string(),
         block_data[3].to_string(),
         block_data[4].to_string(),
-        block_data[5].to_string(),
+        block_data[5].to_string()
     );
     block
 }
@@ -65,9 +79,9 @@ pub fn blockchain_parser(data: String) -> BlockChain {
                 block[2].to_string(),
                 block[3].to_string(),
                 block[4].to_string(),
-                block[5].to_string(),
+                block[5].to_string()
             );
-            bc.add_block(temporary_block)
+            bc.add_block(temporary_block);
         }
     }
     bc

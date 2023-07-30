@@ -53,7 +53,9 @@ impl BlockChain {
         match self.blocks.last() {
             None => {
                 println!("Blockchain Error: Could not add block.");
-                println!("Try requesting a the newest instance of the blockchain: 'request blockchain'");
+                println!(
+                    "Try requesting a the newest instance of the blockchain: 'request blockchain'"
+                );
             }
 
             Some(last_block) => {
@@ -108,7 +110,7 @@ impl BlockChain {
         }
     }
 
-    //Formats the blockchain to be sendable in string format 
+    //Formats the blockchain to be sendable in string format
     pub fn to_sendable(&self) -> String {
         let mut blockchain_string: String = String::from("222");
         for block in self.blocks.iter().skip(1) {
@@ -178,7 +180,7 @@ impl BlockChain {
     */
 }
 
-use md4::{Digest, Md4};
+use md4::{ Digest, Md4 };
 
 impl Block {
     pub fn new(id: u64, file_name: String, file_data: String, previous_hash: String) -> Block {
@@ -195,8 +197,14 @@ impl Block {
     }
 
     //Used when creating a blockchain instance for an already exisiting blockchain in parser
-    pub fn new_mined_block(id: u64, nonce: u64, file_name: String, file_data: String, previous_hash: String, current_hash: String) -> Block {
-
+    pub fn new_mined_block(
+        id: u64,
+        nonce: u64,
+        file_name: String,
+        file_data: String,
+        previous_hash: String,
+        current_hash: String
+    ) -> Block {
         return Block {
             id,
             nonce,
@@ -208,16 +216,16 @@ impl Block {
     }
 
     pub fn to_sendable(&self) -> String {
-            //The % and $ are used as split seperators later on to be able to help in create a blockchain from the blockchain_string
-            let block_string = format!(
-                "111{}%{}%{}%{}%{}%{}",
-                self.id,
-                self.nonce,
-                self.file_name,
-                self.file_data,
-                self.previous_hash,
-                self.current_hash
-            );
+        //The % and $ are used as split seperators later on to be able to help in create a blockchain from the blockchain_string
+        let block_string = format!(
+            "111{}%{}%{}%{}%{}%{}",
+            self.id,
+            self.nonce,
+            self.file_name,
+            self.file_data,
+            self.previous_hash,
+            self.current_hash
+        );
         block_string
     }
 
