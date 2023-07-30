@@ -60,8 +60,11 @@ impl BlockChain {
 
             Some(last_block) => {
                 if self.block_is_valid(&block, last_block) {
+                    let id = block.id;
+                    let file_name = block.file_name.to_owned();
                     self.blocks.push(block);
-                    // println!("Block added to blockchain!")
+                    println!("New file added to blockchain!");
+                    println!("ID: {}, Name: {}", id, file_name);
                 } else {
                     // println!("Block is not valid, could not add to block")
                 }
