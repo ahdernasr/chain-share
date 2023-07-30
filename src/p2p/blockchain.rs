@@ -43,18 +43,25 @@ impl BlockChain {
         return BlockChain { blocks: blocks };
     }
 
+    //Parser-friendly instance of a blockchain with no blocks (no genesis even)
+    // pub fn new_no_genesis() -> BlockChain {
+    //     let blocks: Vec<Block> = vec![];
+    //     return BlockChain { blocks: blocks }
+    // }
+
     pub fn add_block(&mut self, block: Block) {
         match self.blocks.last() {
             None => {
-                println!("Blockchain Error: Could not add block.")
+                println!("Blockchain Error: Could not add block.");
+                println!("Try requesting a the newest instance of the blockchain: 'request blockchain'");
             }
 
             Some(last_block) => {
                 if self.block_is_valid(&block, last_block) {
                     self.blocks.push(block);
-                    println!("Block added to blockchain!")
+                    // println!("Block added to blockchain!")
                 } else {
-                    println!("Block is not valid, could not add to block")
+                    // println!("Block is not valid, could not add to block")
                 }
             }
         }
@@ -64,7 +71,7 @@ impl BlockChain {
     //Checking if block is valid for the 'add_block' function based on 3 criterion
     fn block_is_valid(&self, block: &Block, last_block: &Block) -> bool {
         if block.previous_hash != last_block.current_hash {
-            println!("Invalid previous hash: ID{}", block.id);
+            println!("Invalid previous hash: ID{}, {}, {}", block.id, block.previous_hash, last_block.current_hash);
             false
         } else if !block.current_hash.starts_with("000") {
             println!("Invalid hash: ID{}", block.id);
@@ -104,7 +111,7 @@ impl BlockChain {
     //Formats the blockchain to be sendable in string format 
     pub fn to_sendable(&self) -> String {
         let mut blockchain_string: String = String::from("222");
-        for block in self.blocks.iter() {
+        for block in self.blocks.iter().skip(1) {
             //The % and $ are used as split seperators later on to be able to help in create a blockchain from the blockchain_string
             let block_string = format!(
                 "{}%{}%{}%{}%{}%{}$",
@@ -203,7 +210,7 @@ impl Block {
     pub fn to_sendable(&self) -> String {
             //The % and $ are used as split seperators later on to be able to help in create a blockchain from the blockchain_string
             let block_string = format!(
-                "111{}%{}%{}%{}%{}%{}$",
+                "111{}%{}%{}%{}%{}%{}",
                 self.id,
                 self.nonce,
                 self.file_name,

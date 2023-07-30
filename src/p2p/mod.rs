@@ -91,7 +91,7 @@ impl P2P {
         };
 
         //Initialise new blockchain (if longest chain exists this will be replaced)
-        let mut bc: blockchain::BlockChain = blockchain::BlockChain::new();
+        let bc: blockchain::BlockChain = blockchain::BlockChain::new();
         return P2P {
             swarm: create_swarm,
             peers: vec![],
@@ -123,16 +123,12 @@ impl P2P {
                             match &command[0..3] {
                                 //Initiate blockchain request
                                 "000" => {
-                                    if let Err(e) = self.swarm
+                                    println!("Updating blockchain if longer chain exists...");
+                                    if let Err(_) = self.swarm
                                     .behaviour_mut().gossipsub
                                     .publish(topic.clone(), command.as_bytes()) {
                                     //If there is an error in request blockchain, use own blockchain instance
-                                    if input == "request blockchain" {
-                                        println!("No peers, Creating own blockchain");
-                                        println!("{:?}", self.blockchain);
-                                    } else {
-                                        println!("Publish error: {e:?}");
-                                    }
+                                        println!("No peers, keeping local instance");
                                 }
                                 //Initiate adding mining new block then publishing it
                             },
@@ -148,10 +144,10 @@ impl P2P {
                                     );
                                     //add error checking to avoid publishing if block is invalid
                                     self.blockchain.add_block(mined_block);
-                                    if let Err(e) = self.swarm
+                                    if let Err(_) = self.swarm
                                     .behaviour_mut().gossipsub
                                     .publish(topic.clone(), self.blockchain.blocks[self.blockchain.blocks.len()-1].to_sendable().as_bytes()) {
-                                        println!("Publish error: {e:?}");
+                                        println!("No peers to broadcast to");
                                     }
                             },
                             _ => {
@@ -187,8 +183,13 @@ impl P2P {
                             println!("mDNS discover peer has expired: {peer_id}");
                             self.swarm.behaviour_mut().gossipsub.remove_explicit_peer(&peer_id);
                             //Remove peer from peer list
-                            let index = self.peers.iter().position(|x| *x == peer_id.to_string()).unwrap();
-                            self.peers.remove(index);
+                            let index = self.peers.iter().position(|x| *x == peer_id.to_string());
+                            match index {
+                                Some(i) => {
+                                    self.peers.remove(i);
+                                }
+                                _ => {}
+                            }
                         }
                     },
                     SwarmEvent::Behaviour(MyBehaviourEvent::Gossipsub(gossipsub::Event::Message {
@@ -221,7 +222,6 @@ impl P2P {
                                 //so spam prompt user to request blockchain
                             }
                             "222" => {
-                                println!("Blockchain recieved!");
                                 let temp_bc: BlockChain = parser::blockchain_parser(String::from_utf8_lossy(&message.data).to_string());
                                 if temp_bc.blocks.len() > self.blockchain.blocks.len() {
                                     self.blockchain = temp_bc;

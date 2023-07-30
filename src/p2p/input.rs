@@ -70,7 +70,7 @@ pub fn handle_input<'a>(
                 &"retrieve" => {
                     match iterator.next() {
                         Some(option) => {
-                            let hash = option;
+                            let _hash = option;
                         }
                         _ => {
                             //invalid command, view 'upload' help
