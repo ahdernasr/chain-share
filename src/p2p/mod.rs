@@ -15,9 +15,9 @@ use libp2p::{
 };
 use libp2p_quic as quic;
 use rand::Rng;
+use std::collections::HashSet;
 use std::error::Error;
 use std::time::Duration;
-use std::collections::HashSet;
 
 // Peer to peer object that controls most of the p2p network and blockchain functionality
 pub struct P2P {
@@ -113,54 +113,57 @@ impl P2P {
 
         let mut discovered_peers: HashSet<PeerId> = HashSet::new();
         // Kick it off
+
+        
         loop {
             select! {
                 line = stdin.select_next_some() => {
                     let input = line.unwrap().clone();
-                    let to_publish: Option<String> =  handle_input(&input, &self.blockchain, &self.peers);
-                    match to_publish {
-                        Some(command) => {
-                            match &command[0..3] {
-                                //Initiate blockchain request
-                                "000" => {
-                                    println!("Updating blockchain if longer chain exists...");
-                                    if let Err(_) = self.swarm
-                                    .behaviour_mut().gossipsub
-                                    .publish(topic.clone(), command.as_bytes()) {
-                                    //If there is an error in request blockchain, use own blockchain instance
-                                        println!("No peers, keeping local instance");
-                                }
-                                //Initiate adding mining new block then publishing it
-                            },
-                                "111" => {
-                                    let split_command = command.split("%").collect::<Vec<&str>>();
-                                    let file_name = split_command[1];
-                                    let file_path = split_command[2];
-                                    let mined_block: blockchain::Block = blockchain::Block::new(
-                                        self.blockchain.blocks[self.blockchain.blocks.len()-1].id+1,
-                                        file_name.to_string(),
-                                        file_path.to_string(),
-                                        self.blockchain.blocks[self.blockchain.blocks.len()-1].current_hash.to_owned(),
-                                    );
-                                    //add error checking to avoid publishing if block is invalid
-                                    self.blockchain.add_block(mined_block);
-                                    if let Err(_) = self.swarm
-                                    .behaviour_mut().gossipsub
-                                    .publish(topic.clone(), self.blockchain.blocks[self.blockchain.blocks.len()-1].to_sendable().as_bytes()) {
-                                        println!("No peers to broadcast to");
+                        let to_publish: Option<String> =  handle_input(&input, &self.blockchain, &self.peers);
+                        match to_publish {
+                            Some(command) => {
+                                match &command[0..3] {
+                                    //Initiate blockchain request
+                                    "000" => {
+                                        println!("Updating blockchain if longer chain exists...");
+                                        if let Err(_) = self.swarm
+                                        .behaviour_mut().gossipsub
+                                        .publish(topic.clone(), command.as_bytes()) {
+                                        //If there is an error in request blockchain, use own blockchain instance
+                                            println!("No peers, keeping local instance");
                                     }
-                            },
-                            _ => {
+                                    //Initiate adding mining new block then publishing it
+                                },
+                                    "111" => {
+                                        let split_command = command.split("%").collect::<Vec<&str>>();
+                                        let file_name = split_command[1];
+                                        let file_path = split_command[2];
+                                        let mined_block: blockchain::Block = blockchain::Block::new(
+                                            self.blockchain.blocks[self.blockchain.blocks.len()-1].id+1,
+                                            file_name.to_string(),
+                                            file_path.to_string(),
+                                            self.blockchain.blocks[self.blockchain.blocks.len()-1].current_hash.to_owned(),
+                                        );
+                                        //add error checking to avoid publishing if block is invalid
+                                        self.blockchain.add_block(mined_block);
+                                        if let Err(_) = self.swarm
+                                        .behaviour_mut().gossipsub
+                                        .publish(topic.clone(), self.blockchain.blocks[self.blockchain.blocks.len()-1].to_sendable().as_bytes()) {
+                                            println!("No peers to broadcast to");
+                                        }
+                                },
+                                _ => {
 
+                                }
+                                //create a nested match statement here based on the command
+                                // publish commands:
+                                //  upload
+                                //  request blockchain
+                                }
                             }
-                            //create a nested match statement here based on the command
-                            // publish commands:
-                            //  upload
-                            //  request blockchain
+                            _ =>{}
                         }
-                        }
-                        _ =>{}
-                    }
+                    
                 },
                 event = self.swarm.select_next_some() => match event {
                     SwarmEvent::Behaviour(MyBehaviourEvent::Mdns(mdns::Event::Discovered(list))) => {
@@ -173,7 +176,7 @@ impl P2P {
                                 self.peers.push(peer_id.to_string());
                                 // Add the peer ID to the discovered_peers set
                                 discovered_peers.insert(peer_id.clone());
-            
+
                                 // Todo: Add any additional actions you want to perform on the newly discovered peer
                             }
                         }
@@ -206,8 +209,8 @@ impl P2P {
                         match &String::from_utf8_lossy(&message.data).as_ref()[0..3] {
                             //Handle a request for longest chain from peer
                             "000" => {
-                                println!("Longest chain requested...");
-                                println!("Sending local instance of blockchain.");
+                                // println!("Longest chain requested...");
+                                // println!("Sending local instance of blockchain.");
                                 if let Err(e) = self.swarm
                                 .behaviour_mut().gossipsub
                                 .publish(topic.clone(), self.blockchain.to_sendable().as_bytes()) {
@@ -215,7 +218,7 @@ impl P2P {
                             }
                             },
                             "111" => {
-                                println!("Block recieved");
+                                // println!("Block recieved");
                                 let temp_block: Block = parser::block_parser(String::from_utf8_lossy(&message.data).to_string());
                                 self.blockchain.add_block(temp_block);
                                 //if block is invalid, could indicate that local blockchain instance is outdated,

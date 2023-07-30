@@ -71,13 +71,13 @@ impl BlockChain {
     //Checking if block is valid for the 'add_block' function based on 3 criterion
     fn block_is_valid(&self, block: &Block, last_block: &Block) -> bool {
         if block.previous_hash != last_block.current_hash {
-            println!("Invalid previous hash: ID{}, {}, {}", block.id, block.previous_hash, last_block.current_hash);
+            // println!("Invalid previous hash: ID{}, {}, {}", block.id, block.previous_hash, last_block.current_hash);
             false
         } else if !block.current_hash.starts_with("000") {
-            println!("Invalid hash: ID{}", block.id);
+            // println!("Invalid hash: ID{}", block.id);
             false
         } else if block.id != last_block.id + 1 {
-            println!("Invalid ID, ID must be one more than last block's ID");
+            // println!("Invalid ID, ID must be one more than last block's ID");
             false
         } else {
             true
