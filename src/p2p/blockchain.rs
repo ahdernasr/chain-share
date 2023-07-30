@@ -146,6 +146,18 @@ impl BlockChain {
         blockchain_string
     }
 
+    pub fn find_block(&self, id: u64) -> Option<&Block> {
+        let index = self.blocks.iter().position(|x| x.id == id);
+        match index {
+            Some(i) => {
+                Some(&self.blocks[i])
+            }
+            _ => {
+                None
+            }
+        }
+    }
+
     /*
     //Implementation needs to be readjusted for multi-node chain selection
     fn chain_selector(&self, local: Vec<Block>, remote: Vec<Block>) -> Option<Vec<Block>> {

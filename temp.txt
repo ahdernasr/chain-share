@@ -8,3 +8,4 @@ TODO:
 - Use the block.to_sendable method in the blockchain,to_sendable method for a clean implementation
 - Customise genesis block
 - Turn program into an executable?
+- Look over the multinode chain selector in blockchain.rs

@@ -167,6 +167,24 @@ impl P2P {
                                             }
                                         }
                                 },
+                                    "222" => {
+                                        let split_command = command.split("%").collect::<Vec<&str>>();
+                                        let id = split_command[1];
+                                        let path = split_command[2];
+                                        //Parse the id to u64
+                                        let parsed_id = match id.parse::<u64>() {
+                                            Ok(num) => num,
+                                            Err(_) => {
+                                                println!("Invalid ID, please try again.");
+                                                999999
+                                            }
+                                        };
+                                        if parsed_id != 999999 {
+                                            let block: &Block = self.blockchain.find_block(parsed_id).unwrap();
+                                            println!("{:?}",block.file_data);
+                                        }
+                                    },
+                                    
                                 _ => {
 
                                 }

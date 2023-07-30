@@ -81,7 +81,16 @@ pub fn handle_input<'a>(
                 &"retrieve" => {
                     match iterator.next() {
                         Some(option) => {
-                            let _hash = option;
+                            let id = option;
+                            match iterator.next() {
+                                Some(option) => {
+                                    let string: String = format!("222%{}%{}", id, option);
+                                    return Some(string.clone());
+                                }
+                                _ => {
+                                    //invalid command, view 'retrieve help'
+                                }
+                            }
                         }
                         _ => {
                             //invalid command, view 'upload' help
