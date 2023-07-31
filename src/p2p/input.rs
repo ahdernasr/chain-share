@@ -3,47 +3,46 @@ use crate::p2p::blockchain::BlockChain;
 pub fn handle_input<'a>(
     input: &'a str,
     blockchain: &BlockChain,
-    peers: &Vec<String>
+    peers: &Vec<String>,
 ) -> Option<String> {
     // Splits input into multiple parameters
-    // Note: Always show selection
     let input_iterator: Vec<&str> = input.split(' ').collect();
     let mut iterator = input_iterator.iter();
 
-    //Iterating through parameters, checking if they exist first through Some
+    //Iterating through parameters, checking if they exist first through Option types
     match iterator.next() {
         Some(option) => {
             match option {
-                &"request" =>
-                    match iterator.next() {
-                        Some(option) =>
-                            match option {
-                                &"blockchain" => {
-                                    return Some("000".to_string());
-                                }
-                                _ => {
-                                    println!(
-                                        "Invalid command - use 'request blockchain to request the longest chain'"
-                                    );
-                                }
-                            }
+                &"request" => match iterator.next() {
+                    Some(option) => match option {
+                        &"blockchain" => {
+                            return Some("000".to_string());
+                        }
                         _ => {
                             println!(
-                                "Invalid command - use 'request blockchain to request the longest chain'"
-                            );
+                                        "Invalid command - use 'request blockchain' to request the longest chain"
+                                    );
                         }
+                    },
+                    _ => {
+                        println!(
+                                "Invalid command - use 'request blockchain' to request the longest chain"
+                            );
                     }
+                },
                 &"view" => {
                     match iterator.next() {
                         Some(option) => {
                             match option {
                                 &"blocks" => {
+                                    //show number of blocks in blockchain and info of all blocks
                                     println!("{:?}", blockchain.to_viewable());
-                                } //show number of blocks in blockchain and info of all blocks
+                                }
                                 &"peers" => {
+                                    //show peers ID list and number of peers
                                     println!("Number of peers: {}", peers.len());
                                     println!("Peer List: {:?}", peers);
-                                } //show peers ID list and number of peers
+                                }
                                 _ => {
                                     println!("Invalid command: 'view help' for more info");
                                 }
@@ -61,20 +60,17 @@ pub fn handle_input<'a>(
                             match iterator.next() {
                                 Some(option) => {
                                     let file_path = option;
-                                    let string: String = format!(
-                                        "111%{}%{}",
-                                        &file_name,
-                                        &file_path
-                                    );
+                                    let string: String =
+                                        format!("111%{}%{}", &file_name, &file_path);
                                     return Some(string.clone());
                                 }
                                 _ => {
-                                    //invalid command, view 'upload' help
+                                    println!("Invalid command: 'upload help' for more info");
                                 }
                             }
                         }
                         _ => {
-                            //invalid command, view 'upload' help
+                            println!("Invalid command: 'upload help' for more info");
                         }
                     }
                 }

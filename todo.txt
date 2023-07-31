@@ -8,6 +8,11 @@ TODO:
 - Use the block.to_sendable method in the blockchain,to_sendable method for a clean implementation
 - Customise genesis block
 - Turn program into an executable?
-- Look over the multinode chain selector in blockchain.rs
+- Look over the multinode chain selector in blockchain.rs chainisvalid
 - Find out the amount of time it takes for mdns to look for a peer and how to speed it up
 - Notify the user about correct way to use paths (needs to end in / for retrieve for example)
+- Add help guides
+- Make view blocks and view peers more visual
+
+//Works with files encoded in UTF-8 or ASCII
+//Examples: .txt, .iini, .cfg, source code (.rs, .cpp, etc.), .html, .json, .md

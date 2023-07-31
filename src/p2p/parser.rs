@@ -1,12 +1,7 @@
 use crate::p2p::blockchain::{ Block, BlockChain };
-use std::fs;
-use std::io::Write;
-use std::path::Path;
+use std::{fs, io::Write, path::Path};
 
-// takes in a path and reads the file to convert to string so
-// its sendeable across the blockchain
-//Works with files encoded in UTF-8 or ASCII
-//Examples: .txt, .iini, .cfg, source code (.rs, .cpp, etc.), .html, .json, .md
+// Takes in a path and reads the file to convert to string so its sendeable across the blockchain
 pub fn file_to_string(path: &str) -> Option<String> {
     // Replace "your_absolute_file_path" with the actual absolute path of the file you want to read.
     let file_path = Path::new(path);
