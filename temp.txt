@@ -9,3 +9,5 @@ TODO:
 - Customise genesis block
 - Turn program into an executable?
 - Look over the multinode chain selector in blockchain.rs
+- Find out the amount of time it takes for mdns to look for a peer and how to speed it up
+- Notify the user about correct way to use paths (needs to end in / for retrieve for example)

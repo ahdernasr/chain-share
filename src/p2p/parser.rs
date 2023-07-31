@@ -1,5 +1,6 @@
 use crate::p2p::blockchain::{ Block, BlockChain };
 use std::fs;
+use std::io::Write;
 use std::path::Path;
 
 // takes in a path and reads the file to convert to string so
@@ -20,9 +21,15 @@ pub fn file_to_string(path: &str) -> Option<String> {
     }
 }
 
-// pub fn string_to_file(data: String, path: &str) {
-//     //Should download a file to path
-// }
+pub fn string_to_file(data: String, name: String,  file_type: String, path: String) {
+    let full_path: String = format!("{}{}.{}", path, name, file_type);
+    let mut file = fs::File::create(full_path).expect("Failed to create file");
+    let result = file.write_all(data.as_bytes());
+    match result {
+        Ok(_) => { println!("File successfully downloaded.")}
+        Err(_) => { println!("File could not be downloaded, please try again.")}
+    }
+}
 
 // Takes in the blockchain string in its sendable format and creates a blockchain object with it
 pub fn block_parser(data: String) -> Block {
@@ -46,7 +53,8 @@ pub fn block_parser(data: String) -> Block {
         block_data[2].to_string(),
         block_data[3].to_string(),
         block_data[4].to_string(),
-        block_data[5].to_string()
+        block_data[5].to_string(),
+        block_data[6].to_string(),
     );
     block
 }
@@ -79,7 +87,8 @@ pub fn blockchain_parser(data: String) -> BlockChain {
                 block[2].to_string(),
                 block[3].to_string(),
                 block[4].to_string(),
-                block[5].to_string()
+                block[5].to_string(),
+                block[6].to_string()
             );
             bc.add_block(temporary_block);
         }

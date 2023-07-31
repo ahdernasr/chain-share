@@ -144,6 +144,11 @@ impl P2P {
                                         let split_command = command.split("%").collect::<Vec<&str>>();
                                         let file_name = split_command[1];
                                         let file_path = split_command[2];
+                                        //obtain the file type from the file name (.txt for example)
+                                        let split_path = &file_path.split('/').collect::<Vec<&str>>();
+                                        let full_file = split_path[split_path.len()-1];
+                                        let split_file = &full_file.split('.').collect::<Vec<&str>>();
+                                        let file_type = split_file[split_file.len()-1];
                                         //accquire the data from the given file path
                                         let data: Option<String> = parser::file_to_string(file_path);
                                         match data {
@@ -152,6 +157,7 @@ impl P2P {
                                                     self.blockchain.blocks[self.blockchain.blocks.len()-1].id+1,
                                                     file_name.to_string(),
                                                     data,
+                                                    file_type.to_string(),
                                                     self.blockchain.blocks[self.blockchain.blocks.len()-1].current_hash.to_owned(),
                                                 );
                                                 //add error checking to avoid publishing if block is invalid
@@ -181,7 +187,7 @@ impl P2P {
                                         };
                                         if parsed_id != 999999 {
                                             let block: &Block = self.blockchain.find_block(parsed_id).unwrap();
-                                            println!("{:?}",block.file_data);
+                                            parser::string_to_file(block.file_data.to_owned(), block.file_name.to_owned(), block.file_type.to_owned(), path.to_string());
                                         }
                                     },
                                     

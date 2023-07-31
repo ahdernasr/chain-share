@@ -21,6 +21,7 @@ pub struct Block {
     pub file_data: String,
     pub previous_hash: String,
     pub current_hash: String,
+    pub file_type: String,
 }
 
 impl BlockChain {
@@ -30,10 +31,11 @@ impl BlockChain {
         let genesis_block: Block = Block {
             id: 1,
             nonce: 12345,
-            file_name: String::from("No File"),
-            file_data: String::from(" "),
+            file_name: String::from("Genesis"),
+            file_data: String::from("This is just the genesis block"),
             previous_hash: String::from("00000000000000000000000000000000"),
             current_hash: String::from("ae320cf7e6f1593d57730e250307fa6a"),
+            file_type: String::from("txt")
         };
         // Block vector with only Genesis block instantiated
         let mut blocks: Vec<Block> = vec![];
@@ -66,7 +68,7 @@ impl BlockChain {
                     println!("New file added to blockchain!");
                     println!("ID: {}, Name: {}", id, file_name);
                 } else {
-                    // println!("Block is not valid, could not add to block")
+                    println!("Block is not valid, could not add to block")
                 }
             }
         }
@@ -76,13 +78,13 @@ impl BlockChain {
     //Checking if block is valid for the 'add_block' function based on 3 criterion
     fn block_is_valid(&self, block: &Block, last_block: &Block) -> bool {
         if block.previous_hash != last_block.current_hash {
-            // println!("Invalid previous hash: ID{}, {}, {}", block.id, block.previous_hash, last_block.current_hash);
+            println!("Invalid previous hash: ID{}, {}, {}", block.id, block.previous_hash, last_block.current_hash);
             false
         } else if !block.current_hash.starts_with("000") {
-            // println!("Invalid hash: ID{}", block.id);
+            println!("Invalid hash: ID{}", block.current_hash);
             false
         } else if block.id != last_block.id + 1 {
-            // println!("Invalid ID, ID must be one more than last block's ID");
+            println!("Invalid ID, ID must be one more than last block's ID");
             false
         } else {
             true
@@ -198,7 +200,7 @@ impl BlockChain {
 use md4::{ Digest, Md4 };
 
 impl Block {
-    pub fn new(id: u64, file_name: String, file_data: String, previous_hash: String) -> Block {
+    pub fn new(id: u64, file_name: String, file_data: String, file_type: String, previous_hash: String,) -> Block {
         let (nonce, hash) = Block::mine(id, &previous_hash, &file_data);
 
         return Block {
@@ -208,6 +210,7 @@ impl Block {
             file_data,
             previous_hash,
             current_hash: hash,
+            file_type: file_type,
         };
     }
 
@@ -217,6 +220,7 @@ impl Block {
         nonce: u64,
         file_name: String,
         file_data: String,
+        file_type: String,
         previous_hash: String,
         current_hash: String
     ) -> Block {
@@ -225,6 +229,7 @@ impl Block {
             nonce,
             file_name,
             file_data,
+            file_type,
             previous_hash,
             current_hash,
         };
@@ -233,11 +238,12 @@ impl Block {
     pub fn to_sendable(&self) -> String {
         //The % and $ are used as split seperators later on to be able to help in create a blockchain from the blockchain_string
         let block_string = format!(
-            "111{}%{}%{}%{}%{}%{}",
+            "111{}%{}%{}%{}%{}%{}%{}",
             self.id,
             self.nonce,
             self.file_name,
             self.file_data,
+            self.file_type,
             self.previous_hash,
             self.current_hash
         );
