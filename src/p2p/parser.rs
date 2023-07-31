@@ -1,5 +1,6 @@
 use crate::p2p::blockchain::{ Block, BlockChain };
 use std::{fs, io::Write, path::Path};
+use colored::*;
 
 // Takes in a path and reads the file to convert to string so its sendeable across the blockchain
 pub fn file_to_string(path: &str) -> Option<String> {
@@ -9,8 +10,7 @@ pub fn file_to_string(path: &str) -> Option<String> {
     // Attempt to read the contents of the file into a string.
     match fs::read_to_string(file_path) {
         Ok(contents) => { Some(contents) }
-        Err(err) => {
-            println!("{:?}", err);
+        Err(_) => {
             None
         }
     }
@@ -18,11 +18,16 @@ pub fn file_to_string(path: &str) -> Option<String> {
 
 pub fn string_to_file(data: String, name: String,  file_type: String, path: String) {
     let full_path: String = format!("{}{}.{}", path, name, file_type);
-    let mut file = fs::File::create(full_path).expect("Failed to create file");
-    let result = file.write_all(data.as_bytes());
-    match result {
-        Ok(_) => { println!("File successfully downloaded.")}
-        Err(_) => { println!("File could not be downloaded, please try again.")}
+    let file = fs::File::create(full_path);
+    match file {
+        Ok(mut file) => {
+            let result = file.write_all(data.as_bytes());
+            match result {
+                Ok(_) => { println!("{}", "File successfully downloaded.".cyan())}
+                Err(_) => { println!("{}", "File could not be downloaded, please try again.".yellow())}
+            }
+        }
+        Err(_) => { println!("{}", "Invalid path, please try again.".yellow())}
     }
 }
 

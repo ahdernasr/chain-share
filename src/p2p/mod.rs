@@ -3,6 +3,7 @@ mod input;
 mod parser;
 use async_std::io;
 use blockchain::{Block, BlockChain};
+use colored::*;
 use futures::{future::Either, prelude::*, select};
 use input::handle_input;
 use libp2p::Transport;
@@ -18,7 +19,6 @@ use rand::Rng;
 use std::collections::HashSet;
 use std::error::Error;
 use std::time::Duration;
-
 // Peer to peer object that controls most of the p2p network and blockchain functionality
 pub struct P2P {
     pub swarm: Swarm<MyBehaviour>,
@@ -38,7 +38,11 @@ impl P2P {
         // Create a random PeerId
         let id_keys = identity::Keypair::generate_ed25519();
         let local_peer_id = PeerId::from(id_keys.public());
-        println!("Local peer id: {local_peer_id}");
+        println!(
+            "{} {}",
+            "Local peer id:".cyan(),
+            local_peer_id.to_string().bright_magenta()
+        );
 
         // Set up an encrypted DNS-enabled TCP Transport over the yamux protocol.
         let tcp_transport = tcp::async_io::Transport::new(tcp::Config::default().nodelay(true))
@@ -112,7 +116,18 @@ impl P2P {
             .listen_on("/ip4/0.0.0.0/udp/0/quic-v1".parse()?)?;
         self.swarm.listen_on("/ip4/0.0.0.0/tcp/0".parse()?)?;
 
-        println!("Use cmd 'request blockchain' to request longest chain from peers");
+        println!(
+            "{} {} {}",
+            "Use cmd".cyan(),
+            "'request blockchain'".yellow().bold(),
+            "to request longest chain from peers -".cyan()
+        );
+        println!(
+            "{}",
+            "Any additions before requesting blockchain will possibly not be saved.\n"
+                .red()
+                .bold()
+        );
 
         let mut discovered_peers: HashSet<PeerId> = HashSet::new();
         // Kick it off
@@ -135,12 +150,12 @@ impl P2P {
                                 match &command[0..3] {
                                     //Initiate blockchain request
                                     "000" => {
-                                        println!("Updating blockchain if longer chain exists...");
+                                        println!("{}", "Updating blockchain if longer chain exists...".bright_cyan().italic());
                                         if let Err(_) = self.swarm
                                         .behaviour_mut().gossipsub
                                         .publish(topic.clone(), command.as_bytes()) {
                                         //If there is an error in request blockchain, use own blockchain instance
-                                            println!("No peers, keeping local instance");
+                                            println!("{} {}", "!".red().bold(), "No peers, keeping local instance.".cyan());
                                     }
                                 },
                                     //Initiate mining new block then publishing it to peers
@@ -169,11 +184,10 @@ impl P2P {
                                                 if let Err(_) = self.swarm
                                                 .behaviour_mut().gossipsub
                                                 .publish(topic.clone(), self.blockchain.blocks[self.blockchain.blocks.len()-1].to_sendable().as_bytes()) {
-                                                    println!("No peers to broadcast to");
                                                 }
                                             }
                                             _ => {
-                                                println!("Invalid file path, please try again.")
+                                                println!("{}", "Invalid file path/Unsupported file type, please try again.".red().bold())
                                             }
                                         }
                                 },
@@ -186,13 +200,20 @@ impl P2P {
                                         let parsed_id = match id.parse::<u64>() {
                                             Ok(num) => num,
                                             Err(_) => {
-                                                println!("Invalid ID, please try again.");
+                                                println!("{}", "Invalid ID, please try again.".red().bold());
                                                 999999
                                             }
                                         };
                                         if parsed_id != 999999 {
-                                            let block: &Block = self.blockchain.find_block(parsed_id).unwrap();
-                                            parser::string_to_file(block.file_data.to_owned(), block.file_name.to_owned(), block.file_type.to_owned(), path.to_string());
+                                            let block = self.blockchain.find_block(parsed_id);
+                                            match block {
+                                                Some(block) => {
+                                                    parser::string_to_file(block.file_data.to_owned(), block.file_name.to_owned(), block.file_type.to_owned(), path.to_string());
+                                                }
+                                                _ => {
+                                                    println!("{}", "Block does not exist - use the correct ID".red().bold());
+                                                }
+                                            }
                                         }
                                     },
 
@@ -216,7 +237,7 @@ impl P2P {
                         for (peer_id, _multiaddr) in list {
                             if !discovered_peers.contains(&peer_id) {
                                 // Peer is not yet discovered, proceed with handling
-                                println!("mDNS discovered a new peer: {}", peer_id);
+                                println!("{} {} {}", "!".red().bold(), "mDNS discovered a new peer:".cyan(), peer_id.to_string().bright_purple());
                                 self.swarm.behaviour_mut().gossipsub.add_explicit_peer(&peer_id);
                                 // Add peer to the peer list
                                 self.peers.push(peer_id.to_string());
@@ -226,11 +247,11 @@ impl P2P {
                             }
                         }
                     },
-                    // Peer lost 
+                    // Peer lost
                     SwarmEvent::Behaviour(MyBehaviourEvent::Mdns(mdns::Event::Expired(list))) => {
                         for (peer_id, _multiaddr) in list {
                             if discovered_peers.contains(&peer_id) {
-                            println!("mDNS discover peer has expired: {peer_id}");
+                                println!("{} {} {}", "!".red().bold(), "mDNS discover peer has expired:".cyan(), peer_id.to_string().bright_purple());
                             self.swarm.behaviour_mut().gossipsub.remove_explicit_peer(&peer_id);
                             discovered_peers.remove(&peer_id);
                             //Remove peer from peer list
@@ -259,29 +280,22 @@ impl P2P {
                         match &String::from_utf8_lossy(&message.data).as_ref()[0..3] {
                             //Handle a request for longest chain from peer
                             "000" => {
-                                // println!("Longest chain requested...");
-                                // println!("Sending local instance of blockchain.");
-                                if let Err(e) = self.swarm
+                                if let Err(_) = self.swarm
                                 .behaviour_mut().gossipsub
                                 .publish(topic.clone(), self.blockchain.to_sendable().as_bytes()) {
-                                println!("Publish error: {e:?}");
+                                println!("{} {}", "!".red().bold(), "Error sending local instance of blockchain to joined peer.".cyan());
                             }
                             },
                             "111" => {
-                                // println!("Block recieved");
                                 let temp_block: Block = parser::block_parser(String::from_utf8_lossy(&message.data).to_string());
                                 self.blockchain.add_block(temp_block);
-                                //if block is invalid, could indicate that local blockchain instance is outdated,
-                                //so spam prompt user to request blockchain
                             }
                             "222" => {
                                 let temp_bc: BlockChain = parser::blockchain_parser(String::from_utf8_lossy(&message.data).to_string());
                                 if temp_bc.blocks.len() > self.blockchain.blocks.len() {
                                     self.blockchain = temp_bc;
+                                    println!("{} {}", "!".red().bold(), "Blockchain now up-to-date.".cyan())
                                 }
-                                //Parse into a blockchain object
-                                //If blockchain.length is bigger than the local instance, update it
-                                //Confirm blockchain update
                             }
                             _ => {
                                 println!(

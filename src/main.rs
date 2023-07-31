@@ -7,9 +7,8 @@ use std::error::Error;
 async fn main() -> Result<(), Box<dyn Error>> {
 
     print!("{}[2J", 27 as char); //Clears the terminal
-    print_ascii();
-    println!("{}", "Welcome to ChainShare".red().bold());
-
+    println!("{}", print_ascii());
+    println!("{}\n", "ChainShare v1.0.0".white().bold());
     //Create a new p2p object to start the p2p network
     let mut p2p: p_2_p = p_2_p::new();
     let _ = p2p.run_task().await;
@@ -18,8 +17,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn print_ascii() {
-    println!(r#"  
+fn print_ascii() -> ColoredString {
+    let ascii = r#"  
 ######################################################################   
     _____  _             _          _____  _                          
    / ____|| |           (_)        / ____|| |                         
@@ -29,5 +28,6 @@ fn print_ascii() {
    \_____||_| |_| \__,_||_||_| |_||_____/ |_| |_| \__,_||_|    \___|
 
 ######################################################################
- "#);
+ "#.blue().bold();
+ ascii
 }
