@@ -39,8 +39,8 @@ impl P2P {
         let id_keys = identity::Keypair::generate_ed25519();
         let local_peer_id = PeerId::from(id_keys.public());
         println!(
-            "{} {}",
-            "Local peer id:".cyan(),
+            "{} {}\n",
+            "Local peer id:".truecolor(36, 200, 255),
             local_peer_id.to_string().bright_magenta()
         );
 
@@ -118,9 +118,9 @@ impl P2P {
 
         println!(
             "{} {} {}",
-            "Use cmd".cyan(),
-            "'request blockchain'".yellow().bold(),
-            "to request longest chain from peers -".cyan()
+            "Use cmd".truecolor(36, 200, 255),
+            "'guide'".yellow().bold(),
+            "to view the guide.".truecolor(36, 200, 255),
         );
         println!(
             "{}",
@@ -155,7 +155,7 @@ impl P2P {
                                         .behaviour_mut().gossipsub
                                         .publish(topic.clone(), command.as_bytes()) {
                                         //If there is an error in request blockchain, use own blockchain instance
-                                            println!("{} {}", "!".red().bold(), "No peers, keeping local instance.".cyan());
+                                            println!("{} {}\n", "!".red().bold(), "No peers, keeping local instance.".truecolor(36, 200, 255));
                                     }
                                 },
                                     //Initiate mining new block then publishing it to peers
@@ -187,7 +187,7 @@ impl P2P {
                                                 }
                                             }
                                             _ => {
-                                                println!("{}", "Invalid file path/Unsupported file type, please try again.".red().bold())
+                                                println!("\n{}\n", "Invalid file path/Unsupported file type, please try again.".red().bold())
                                             }
                                         }
                                 },
@@ -200,7 +200,7 @@ impl P2P {
                                         let parsed_id = match id.parse::<u64>() {
                                             Ok(num) => num,
                                             Err(_) => {
-                                                println!("{}", "Invalid ID, please try again.".red().bold());
+                                                println!("\n{}\n", "Invalid ID, please try again.".red().bold());
                                                 999999
                                             }
                                         };
@@ -211,7 +211,7 @@ impl P2P {
                                                     parser::string_to_file(block.file_data.to_owned(), block.file_name.to_owned(), block.file_type.to_owned(), path.to_string());
                                                 }
                                                 _ => {
-                                                    println!("{}", "Block does not exist - use the correct ID".red().bold());
+                                                    println!("\n{}\n", "Block does not exist - use the correct ID".red().bold());
                                                 }
                                             }
                                         }
@@ -237,7 +237,7 @@ impl P2P {
                         for (peer_id, _multiaddr) in list {
                             if !discovered_peers.contains(&peer_id) {
                                 // Peer is not yet discovered, proceed with handling
-                                println!("{} {} {}", "!".red().bold(), "mDNS discovered a new peer:".cyan(), peer_id.to_string().bright_purple());
+                                println!("\n{} {} {}\n", "!".red().bold(), "mDNS discovered a new peer:".truecolor(36, 200, 255), peer_id.to_string().bright_purple());
                                 self.swarm.behaviour_mut().gossipsub.add_explicit_peer(&peer_id);
                                 // Add peer to the peer list
                                 self.peers.push(peer_id.to_string());
@@ -251,7 +251,7 @@ impl P2P {
                     SwarmEvent::Behaviour(MyBehaviourEvent::Mdns(mdns::Event::Expired(list))) => {
                         for (peer_id, _multiaddr) in list {
                             if discovered_peers.contains(&peer_id) {
-                                println!("{} {} {}", "!".red().bold(), "mDNS discover peer has expired:".cyan(), peer_id.to_string().bright_purple());
+                                println!("\n{} {} {}\n", "!".red().bold(), "mDNS discover peer has expired:".truecolor(36, 200, 255), peer_id.to_string().bright_purple());
                             self.swarm.behaviour_mut().gossipsub.remove_explicit_peer(&peer_id);
                             discovered_peers.remove(&peer_id);
                             //Remove peer from peer list
@@ -283,7 +283,7 @@ impl P2P {
                                 if let Err(_) = self.swarm
                                 .behaviour_mut().gossipsub
                                 .publish(topic.clone(), self.blockchain.to_sendable().as_bytes()) {
-                                println!("{} {}", "!".red().bold(), "Error sending local instance of blockchain to joined peer.".cyan());
+                                println!("\n{} {}\n", "!".red().bold(), "Error sending local instance of blockchain to joined peer.".truecolor(36, 200, 255));
                             }
                             },
                             "111" => {
@@ -294,7 +294,7 @@ impl P2P {
                                 let temp_bc: BlockChain = parser::blockchain_parser(String::from_utf8_lossy(&message.data).to_string());
                                 if temp_bc.blocks.len() > self.blockchain.blocks.len() {
                                     self.blockchain = temp_bc;
-                                    println!("{} {}", "!".red().bold(), "Blockchain now up-to-date.".cyan())
+                                    println!("{} {}\n", "!".red().bold(), "Blockchain now up-to-date.".truecolor(36, 200, 255))
                                 }
                             }
                             _ => {

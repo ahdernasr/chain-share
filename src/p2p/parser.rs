@@ -23,11 +23,11 @@ pub fn string_to_file(data: String, name: String,  file_type: String, path: Stri
         Ok(mut file) => {
             let result = file.write_all(data.as_bytes());
             match result {
-                Ok(_) => { println!("{}", "File successfully downloaded.".cyan())}
-                Err(_) => { println!("{}", "File could not be downloaded, please try again.".yellow())}
+                Ok(_) => { println!("{}\n", "File successfully downloaded.".truecolor(36, 200, 255))}
+                Err(_) => { println!("\n{}\n", "File could not be downloaded, please try again.".red().bold())}
             }
         }
-        Err(_) => { println!("{}", "Invalid path, please try again.".yellow())}
+        Err(_) => { println!("\n{}\n", "Invalid path, please try again.".yellow())}
     }
 }
 

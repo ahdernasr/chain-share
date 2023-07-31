@@ -48,8 +48,8 @@ impl BlockChain {
     pub fn add_block(&mut self, block: Block) {
         match self.blocks.last() {
             None => {
-                println!("{}", "Blockchain Error: Could not add block.".red().bold());
-                println!("{}",
+                println!("\n{}", "Blockchain Error: Could not add block.".red().bold());
+                println!("{}\n",
                     "Try requesting a the newest instance of the blockchain: 'request blockchain'".red().bold()
                 );
             }
@@ -59,10 +59,10 @@ impl BlockChain {
                     let id = block.id;
                     let file_name = block.file_name.to_owned();
                     self.blocks.push(block);
-                    println!("{} {}", "!".red().bold(), "New file added to blockchain!".cyan());
-                    println!("{} {} {} {}", "ID:".cyan(), id.to_string().bright_purple(), "Name:".cyan(), file_name.to_string().bright_purple());
+                    println!("\n{} {}", "!".red().bold(), "New file added to blockchain!".truecolor(36, 200, 255));
+                    println!("{} {} {} {}\n", "ID:".truecolor(36, 200, 255), id.to_string().bright_purple(), "Name:".truecolor(36, 200, 255), file_name.to_string().bright_purple());
                 } else {
-                    println!("{}", "Block is not valid, could not add to block".red().bold())
+                    println!("{}\n", "Block is not valid, could not add to block".red().bold())
                 }
             }
         }
@@ -72,13 +72,13 @@ impl BlockChain {
     //Checking if block is valid for the 'add_block' function based on 3 criterion
     fn block_is_valid(&self, block: &Block, last_block: &Block) -> bool {
         if block.previous_hash != last_block.current_hash {
-            println!("{}{}, {}, {}", "Invalid previous hash: ID:".red().bold(), block.id.to_string().red().bold(), block.previous_hash.red().bold(), last_block.current_hash.red().bold());
+            println!("\n{}{}, {}, {}", "Invalid previous hash: ID:".red().bold(), block.id.to_string().red().bold(), block.previous_hash.red().bold(), last_block.current_hash.red().bold());
             false
         } else if !block.current_hash.starts_with("000") {
-            println!("{}{}", "Invalid hash: ID".red().bold(), block.current_hash.red().bold());
+            println!("\n{}{}", "Invalid hash: ID".red().bold(), block.current_hash.red().bold());
             false
         } else if block.id != last_block.id + 1 {
-            println!("{}", "Invalid ID, ID must be one more than last block's ID".red().bold());
+            println!("\n{}", "Invalid ID, ID must be one more than last block's ID".red().bold());
             false
         } else {
             true
@@ -135,17 +135,17 @@ impl BlockChain {
         for block in self.blocks.iter() {
             let block_string = format!(
                 "\n{} {} {} {} {} {} {} {} {} {} {} {}\n",
-                "Block Id: ".cyan(),
+                "Block Id: ".truecolor(36, 200, 255),
                 block.id.to_string().bright_purple(),
-                " Block Nonce: ".cyan(),
+                " Block Nonce: ".truecolor(36, 200, 255),
                 block.nonce.to_string().bright_purple(),
-                " File Name: ".cyan(),
+                " File Name: ".truecolor(36, 200, 255),
                 block.file_name.bright_purple(),
-                " File Type: ".cyan(),
+                " File Type: ".truecolor(36, 200, 255),
                 block.file_type.bright_purple(),
-                " Previous Hash: ".cyan(),
+                " Previous Hash: ".truecolor(36, 200, 255),
                 block.previous_hash.bright_purple(),
-                " Current Hash: ".cyan(),
+                " Current Hash: ".truecolor(36, 200, 255),
                 block.current_hash.bright_purple()
             );
             blockchain_string.push_str(&block_string);
@@ -253,7 +253,7 @@ impl Block {
     }
 
     pub fn mine(id: u64, previous_hash: &str, file_data: &str) -> (u64, String) {
-        println!("{}", "Mining...".bright_cyan().italic());
+        println!("\n{}", "Mining...".bright_cyan().italic());
         let mut nonce: u64 = 1;
         loop {
             let block_string: String = format!("{}{}{}{}", nonce, id, previous_hash, file_data);
@@ -262,7 +262,7 @@ impl Block {
             let result = &hasher.finalize();
             let hash = hex::encode(result);
             if hash.starts_with("000") {
-                println!("{}{}{}{}", "Mined! Nonce: ".cyan(), nonce.to_string().bright_purple(), " Hash: ".cyan(), hash.bright_purple());
+                println!("{}{}{}{}", "Mined! Nonce: ".truecolor(36, 200, 255), nonce.to_string().bright_purple(), " Hash: ".truecolor(36, 200, 255), hash.bright_purple());
                 return (nonce, hash);
             }
             nonce += 1;

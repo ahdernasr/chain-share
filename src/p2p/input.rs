@@ -14,6 +14,17 @@ pub fn handle_input<'a>(
     match iterator.next() {
         Some(option) => {
             match option {
+                &"guide" => {
+                    println!("{}", "request:".yellow().bold());
+                    println!("      {}{}", "'request blockchain'".yellow(), ": request the longest chain from peers.".cyan());
+                    println!("{}", "view:".yellow().bold());
+                    println!("      {}{}", "'view blocks'".yellow(), ": view all the blocks (files) in the blockchain network.".cyan());
+                    println!("      {}{}", "'view peers'".yellow(), ": view all the peers in the network.".cyan());
+                    println!("{}", "upload:".yellow().bold());
+                    println!("      {}{}", "'upload <file name> <absolute file path>'".yellow(), ": mine a block and upload a file into the blockchain network.".cyan());
+                    println!("{}", "retrieve:".yellow().bold());
+                    println!("      {}{}\n", "'retrieve <block id> <absolute file path>'".yellow(), ": download a file from the blockchain network into a path on your computer.".cyan());
+                },
                 &"request" => match iterator.next() {
                     Some(option) => match option {
                         &"blockchain" => {
@@ -21,19 +32,19 @@ pub fn handle_input<'a>(
                         }
                         _ => {
                             println!(
-                                "{} {} {}",
-                                "Invalid command:".red(),
-                                "'request blockchain'".yellow().bold(),
-                                "to request the longest chain.".red().bold()
+                                "\n{} {} {}\n",
+                                "Invalid command - use".red().bold(),
+                                "'guide'".yellow().bold(),
+                                "to view the guide.".red().bold(),
                             );
                         }
                     },
                     _ => {
                         println!(
-                            "{} {} {}",
-                            "Invalid command:".red().bold(),
-                            "'request blockchain'".yellow().bold(),
-                            "to request the longest chain.".red().bold()
+                            "\n{} {} {}\n",
+                            "Invalid command - use".red().bold(),
+                            "'guide'".yellow().bold(),
+                            "to view the guide.".red().bold(),
                         );
                     }
                 },
@@ -47,25 +58,25 @@ pub fn handle_input<'a>(
                                 }
                                 &"peers" => {
                                     //show peers ID list and number of peers
-                                    println!("{} {}","Number of peers:".cyan(), peers.len().to_string().bright_purple());
-                                    println!("{} {}", "Peers List:".cyan(), peers.join(" ").bright_purple());
-                                }
+                                    println!("\n{} {}","Number of peers:".truecolor(36, 200, 255), peers.len().to_string().bright_purple());
+                                    println!("{} {}\n", "Peers List:".truecolor(36, 200, 255), peers.join(" ").bright_purple());
+                                },
                                 _ => {
                                     println!(
-                                        "{} {} {}",
-                                        "Invalid command:".red().bold(),
-                                        "'view help'".yellow().bold(),
-                                        "for more info.".red().bold()
+                                        "\n{} {} {}\n",
+                                        "Invalid command - use".red().bold(),
+                                        "'guide'".yellow().bold(),
+                                        "to view the guide.".red().bold(),
                                     );
                                 }
                             }
                         }
                         _ => {
                             println!(
-                                "{} {} {}",
-                                "Invalid command:".red().bold(),
-                                "'view help'".yellow().bold(),
-                                "for more info.".red().bold()
+                                "\n{} {} {}\n",
+                                "Invalid command - use".red().bold(),
+                                "'guide'".yellow().bold(),
+                                "to view the guide.".red().bold(),
                             );
                         }
                     }
@@ -81,20 +92,20 @@ pub fn handle_input<'a>(
                             }
                             _ => {
                                 println!(
-                                    "{} {} {}",
-                                    "Invalid command:".red().bold(),
-                                    "'upload help'".yellow().bold(),
-                                    "for more info.".red().bold()
+                                    "\n{} {} {}\n",
+                                    "Invalid command - use".red().bold(),
+                                    "'guide'".yellow().bold(),
+                                    "to view the guide.".red().bold(),
                                 );
                             }
                         }
                     }
                     _ => {
                         println!(
-                            "{} {} {}",
-                            "Invalid command:".red().bold(),
-                            "'upload help'".yellow().bold(),
-                            "for more info.".red().bold()
+                            "\n{} {} {}\n",
+                            "Invalid command - use".red().bold(),
+                            "'guide'".yellow().bold(),
+                            "to view the guide.".red().bold(),
                         );
                     }
                 },
@@ -108,30 +119,40 @@ pub fn handle_input<'a>(
                             }
                             _ => {
                                 println!(
-                                    "{} {} {}",
-                                    "Invalid command:".red().bold(),
-                                    "'retrieve help'".yellow().bold(),
-                                    "for more info.".red().bold()
+                                    "\n{} {} {}\n",
+                                    "Invalid command - use".red().bold(),
+                                    "'guide'".yellow().bold(),
+                                    "to view the guide.".red().bold(),
                                 );
                             }
                         }
                     }
                     _ => {
                         println!(
-                            "{} {} {}",
-                            "Invalid command:".red(),
-                            "'retrieve help'".yellow().bold(),
-                            "for more info.".red().bold()
+                            "\n{} {} {}\n",
+                            "Invalid command - use".red().bold(),
+                            "'guide'".yellow().bold(),
+                            "to view the guide.".red().bold(),
                         );
                     }
                 },
                 _ => {
-                    println!("{}", "Invalid input - refer to guide:".red().bold());
+                    println!(
+                        "\n{} {} {}\n",
+                        "Invalid command - use".red().bold(),
+                        "'guide'".yellow().bold(),
+                        "to view the guide.".red().bold(),
+                    );
                 }
             }
         }
         _ => {
-            println!("{}", "Invalid input - refer to guide:".red().bold());
+            println!(
+                "\n{} {} {}\n",
+                "Invalid command - use".red().bold(),
+                "'guide'".yellow().bold(),
+                "to view the guide.".red().bold(),
+            );
         }
     }
     return None;
