@@ -7,6 +7,7 @@ use std::error::Error;
 async fn main() -> Result<(), Box<dyn Error>> {
 
     print!("{}[2J", 27 as char); //Clears the terminal
+    print!("{}[2J", 27 as char); //Clears the terminal
     println!("{}", print_ascii());
     println!("{}\n", "ChainShare v1.0.0".white().bold());
     //Create a new p2p object to start the p2p network

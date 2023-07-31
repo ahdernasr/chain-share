@@ -15,16 +15,37 @@ pub fn handle_input<'a>(
         Some(option) => {
             match option {
                 &"guide" => {
-                    println!("{}", "request:".yellow().bold());
-                    println!("      {}{}", "'request blockchain'".yellow(), ": request the longest chain from peers.".cyan());
+                    println!("\n{}", "request:".yellow().bold());
+                    println!(
+                        "      {}{}",
+                        "'request blockchain'".yellow(),
+                        ": request the longest chain from peers.".truecolor(36, 200, 255)
+                    );
                     println!("{}", "view:".yellow().bold());
-                    println!("      {}{}", "'view blocks'".yellow(), ": view all the blocks (files) in the blockchain network.".cyan());
-                    println!("      {}{}", "'view peers'".yellow(), ": view all the peers in the network.".cyan());
+                    println!(
+                        "      {}{}",
+                        "'view blocks'".yellow(),
+                        ": view all the blocks (files) in the blockchain network.".truecolor(36, 200, 255)
+                    );
+                    println!(
+                        "      {}{}",
+                        "'view peers'".yellow(),
+                        ": view all the peers in the network.".truecolor(36, 200, 255)
+                    );
+                    println!(
+                        "      {}{}",
+                        "'view types'".yellow(),
+                        ": view all supported file types for data upload and download.".truecolor(36, 200, 255)
+                    );
                     println!("{}", "upload:".yellow().bold());
-                    println!("      {}{}", "'upload <file name> <absolute file path>'".yellow(), ": mine a block and upload a file into the blockchain network.".cyan());
+                    println!(
+                        "      {}{}",
+                        "'upload <file name> <absolute file path>'".yellow(),
+                        ": mine a block and upload a file into the blockchain network.".truecolor(36, 200, 255)
+                    );
                     println!("{}", "retrieve:".yellow().bold());
-                    println!("      {}{}\n", "'retrieve <block id> <absolute file path>'".yellow(), ": download a file from the blockchain network into a path on your computer.".cyan());
-                },
+                    println!("      {}{}\n", "'retrieve <block id> <absolute file path>'".yellow(), ": download a file from the blockchain network into a path on your computer.".truecolor(36, 200, 255));
+                }
                 &"request" => match iterator.next() {
                     Some(option) => match option {
                         &"blockchain" => {
@@ -58,9 +79,35 @@ pub fn handle_input<'a>(
                                 }
                                 &"peers" => {
                                     //show peers ID list and number of peers
-                                    println!("\n{} {}","Number of peers:".truecolor(36, 200, 255), peers.len().to_string().bright_purple());
-                                    println!("{} {}\n", "Peers List:".truecolor(36, 200, 255), peers.join(" ").bright_purple());
-                                },
+                                    println!(
+                                        "\n{} {}",
+                                        "Number of peers:".truecolor(36, 200, 255),
+                                        peers.len().to_string().bright_purple()
+                                    );
+                                    println!(
+                                        "{} {}\n",
+                                        "Peers List:".truecolor(36, 200, 255),
+                                        peers.join(" ").bright_purple()
+                                    );
+                                }
+                                &"types" => {
+                                    //shows supported file types
+                                    println!("\n{}", "This program supports all UTF-8 encoded file types, including: ".yellow().bold());
+                                    println!("{}\n      {}", "Plain Text Files: ".yellow(), "Files containing plain text such as '.txt' filesm configuration files, logs, etc.".truecolor(36, 200, 255));
+                                    println!("{}\n      {}", "Source code files: ".yellow(), "Source code files for programming languages like .rs (Rust), .c (C), .cpp (C++), .py (Python), .java (Java), etc.".truecolor(36, 200, 255));
+                                    println!("{}\n      {}", "Markup and Data Files: ".yellow(), "Files that use markup languages like HTML, XML, JSON, YAML, etc.".truecolor(36, 200, 255));
+                                    println!("{}\n      {}", "Documentation Files: ".yellow(), "Files with documentation in various formats like Markdown (.md) or reStructuredText (.rst).".truecolor(36, 200, 255));
+                                    println!("{}\n      {}", "Configuration Files: ".yellow(), "Various configuration files like .toml (Tom's Obvious, Minimal Language), .yaml (YAML Ain't Markup Language), .ini (Initialization Files), etc.".truecolor(36, 200, 255));
+                                    println!("{}\n      {}", "Text Data Exports: ".yellow(), "CSV (Comma-Separated Values) files, TSV (Tab-Separated Values) files, and other data exports that contain text data.".truecolor(36, 200, 255));
+                                    println!(
+                                        "{}\n {}",
+                                        "Text-Based Formats: ".yellow(),
+                                        "Text-based serialization formats like .json, .yml, etc.
+
+                                    "
+                                        .truecolor(36, 200, 255)
+                                    );
+                                }
                                 _ => {
                                     println!(
                                         "\n{} {} {}\n",
