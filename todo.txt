@@ -1,7 +1,0 @@
-TODO:
-- Use 'path-clean' or 'path-abs' libraries to handle paths more robustly
-- Try to extend peer to peer run time - what affects it?
-- Use the block.to_sendable method in the blockchain.to_sendable method for a clean implementation
-- Turn program into an executable?
-- Look over the multinode chain selector in blockchain.rs chainisvalid
-- Find out the amount of time it takes for mdns to look for a peer and how to speed it up
