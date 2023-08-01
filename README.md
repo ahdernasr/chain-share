@@ -1,6 +1,6 @@
 # ChainShare
 
-A blockchain-based decentralised file-sharing system that enables file sharing through a local peer-to-peer network.
+A blockchain network based decentralised file-sharing system that enables file sharing through a local peer-to-peer network written in Rust.
 
 ### General Information
 
