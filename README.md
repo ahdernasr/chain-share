@@ -16,6 +16,7 @@ cargo run
 
 The following screen should appear, and you should recieve an alert that a peer has been found (if there are 2 or more instances of the terminal window running):
 
-![Screenshot 2023-07-31 at 21 03 13](https://github.com/ahdernasr/blockchain-file-sharing/assets/44983175/8a250ad5-1d4c-4f57-8974-6cdd41991a1c)
+![Screenshot 2023-07-31 at 21 09 35](https://github.com/ahdernasr/blockchain-file-sharing/assets/44983175/f33e3758-e6e5-4242-9641-7c8c6c26c34b)
+
 
 From then on, use the command ```console guide``` to view how upload and download files between peers in the network using blockchain and p2p network capabilities
