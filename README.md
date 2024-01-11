@@ -8,6 +8,9 @@ The program works through a single blockchain instance that holds the files that
 
 ### How to use 
 
+First, install rust:
+https://www.rust-lang.org/tools/install
+
 Open two terminal windows on your device, or two terminal windows on two different devices connected to the same network, and start the cli using the following command on each terminal:
 
 ```console
